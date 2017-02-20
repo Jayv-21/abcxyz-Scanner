@@ -24,7 +24,7 @@
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" text="Preferences…" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Quit" />
+                        <MenuItem mnemonicParsing="false" onAction="#closeApp" text="Quit" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
@@ -43,7 +43,7 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="About Scanner" />
+                        <MenuItem mnemonicParsing="false" text="About Scanner" onAction="#handleAbout"/>
                     </items>
                 </Menu>
             </menus>
@@ -69,7 +69,7 @@
                             </rowConstraints>
                             <children>
                                 <Label text="Interface" textAlignment="CENTER" />
-                                <ComboBox fx:id="deviceList" onAction="#fillDeviceList" prefWidth="150.0" promptText="Select" GridPane.columnIndex="1" />
+                                <ComboBox fx:id="deviceList" prefWidth="150.0" promptText="Select" GridPane.columnIndex="1" />
                                 <Label text="From File" GridPane.rowIndex="1" />
                                 <CheckBox mnemonicParsing="false" text="Yes" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                     <font>
