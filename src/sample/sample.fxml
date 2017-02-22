@@ -41,9 +41,14 @@
                         <MenuItem mnemonicParsing="false" text="Unselect All" />
                     </items>
                 </Menu>
+            <Menu mnemonicParsing="false" text="Capture">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#showInterfaces" text="Interface Info" />
+              </items>
+            </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="About Scanner" onAction="#handleAbout"/>
+                        <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="About Scanner" />
                     </items>
                 </Menu>
             </menus>

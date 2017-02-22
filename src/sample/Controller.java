@@ -1,20 +1,18 @@
 package sample;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Popup;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import jpcap.*;
-
-import javafx.fxml.Initializable;
+import jpcap.JpcapCaptor;
+import jpcap.NetworkInterface;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 
 public class Controller implements Initializable {
@@ -33,7 +31,7 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    public void closeApp () {
+    public void closeApp() {
         Platform.exit();
         System.exit(0);
     }
@@ -55,4 +53,17 @@ public class Controller implements Initializable {
         System.out.printf("Display 'About Scanner' Popup\n");
     }
 
+    @FXML
+    public void showInterfaces() throws IOException {
+        Pane pane = FXMLLoader.load(getClass().getResource("interfaces.fxml"));
+        Stage interfacePopUp = new Stage();
+
+        interfacePopUp.setTitle("Network Interface Information");
+        interfacePopUp.setScene(new Scene(pane, 600,400));
+        interfacePopUp.show();
+
+        System.out.print("Interface List PopUp Launched");
+    }
 }
+
+
