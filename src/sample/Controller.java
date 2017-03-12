@@ -5,23 +5,24 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import jpcap.JpcapCaptor;
-import jpcap.NetworkInterface;
+import jpcap.packet.Packet;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.scene.control.TextArea;
-import jpcap.NetworkInterfaceAddress;
-import jpcap.packet.Packet;
 
 
 public class Controller implements Initializable {
 
-    NetworkInterface[] devices = JpcapCaptor.getDeviceList();
-    public ComboBox deviceList;
+    private NetworkInterfaceManager nInterface = new NetworkInterfaceManager();
+
+    @FXML
+    public ComboBox deviceList = new ComboBox<>();
 
     @FXML
     public TextArea consoleOutput = new TextArea();
@@ -30,12 +31,7 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.printf("Devices added: ");
-        for(int i = 0; i < devices.length; i++){
-            System.out.printf("%s ", devices[i].name);
-            deviceList.getItems().add(devices[i].name);
-        }
-        System.out.printf("\n");
+        deviceList.setItems(nInterface.activeInterfaces());
     }
 
     @FXML
@@ -73,14 +69,6 @@ public class Controller implements Initializable {
         System.out.print("Interface List PopUp Launched\n");
     }
 
-    public NetworkInterface getSelectedInterface () {
-        int r = deviceList.getSelectionModel().getSelectedIndex();
-
-        System.out.printf("Device selected: %s\n", r);
-
-        return devices[r];
-    }
-
     @FXML
     public void startCapture() throws IOException {
 
@@ -97,7 +85,7 @@ public class Controller implements Initializable {
         JpcapCaptor captor = null;
 
         try {
-            captor = JpcapCaptor.openDevice(getSelectedInterface(), 65535, false, 1);
+            captor = JpcapCaptor.openDevice(nInterface.getSelectedInterface(deviceList), 65535, false, 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
