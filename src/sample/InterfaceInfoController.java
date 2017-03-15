@@ -11,8 +11,8 @@ import java.util.ResourceBundle;
 
 public class InterfaceInfoController implements Initializable {
 
-   NetworkInterfaceManager nInterface = new NetworkInterfaceManager();
-   NetworkInterface[] devices = nInterface.getInterfaceList();
+   private NetworkInterfaceManager nInterface = new NetworkInterfaceManager();
+   private NetworkInterface[] devices = NetworkInterfaceManager.getInterfaceList();
 
    @FXML
    TextArea textArea = new TextArea();

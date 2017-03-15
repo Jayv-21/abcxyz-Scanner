@@ -19,19 +19,19 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
-    private NetworkInterfaceManager nInterface = new NetworkInterfaceManager();
+    private NetworkInterfaceManager nInterfaces= new NetworkInterfaceManager();
+    private PacketManager pManager= new PacketManager();
 
     @FXML
     public ComboBox deviceList = new ComboBox<>();
-
-    @FXML
     public TextArea consoleOutput = new TextArea();
 
-    public int captureStatus;
+
+    private int captureStatus;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        deviceList.setItems(nInterface.activeInterfaces());
+        deviceList.setItems(NetworkInterfaceManager.activeInterfaces());
     }
 
     @FXML
@@ -71,38 +71,46 @@ public class Controller implements Initializable {
 
     @FXML
     public void startCapture() throws IOException {
+        PacketManager.newCapture();
 
+        // Prevents capture from starting if an interface is not selected
         if (deviceList.getSelectionModel().getSelectedIndex() != -1) {
-            new Thread(() -> capturePackets()).start();
+            new Thread(this::capturePackets).start();
         } else {
             System.out.printf("Error: Interface not selected.\n");
         }
     }
 
-    public void capturePackets() {
+    private void capturePackets() {
+        Packet tempPacket;
         captureStatus = 0;
 
         JpcapCaptor captor = null;
 
+        // Open the selected network interface to begin a capture
         try {
-            captor = JpcapCaptor.openDevice(nInterface.getSelectedInterface(deviceList), 65535, false, 1);
+            captor = JpcapCaptor.openDevice(NetworkInterfaceManager.getSelectedInterface(deviceList), 65535, false, 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         System.out.printf("Network Interface opened\n");
 
         // Capture packets until stopCapture is called
-
         while (captureStatus == 0) {
-            printPacket(captor.getPacket());
+            assert captor != null;
+            tempPacket = captor.getPacket();
+            PacketManager.addPacket(tempPacket);
+            printPacket(tempPacket);
         }
         captor.close();
     }
 
 
-    public void printPacket(Packet packet) {
+    private void printPacket(Packet packet) {
         Platform.runLater(() -> {
             if (packet != null) {
+
                 consoleOutput.appendText(String.valueOf(packet));
                 consoleOutput.appendText("\n");
                 System.out.printf("%s\n", String.valueOf(packet));
@@ -120,7 +128,13 @@ public class Controller implements Initializable {
 
     @FXML
     public void clearCapture() {
+        PacketManager.clearCapture();
         consoleOutput.clear();
+    }
+
+    @FXML
+    public void handleClearStats() {
+        PacketManager.clearStats();
     }
 }
 
