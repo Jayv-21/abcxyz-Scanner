@@ -24,7 +24,7 @@
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" text="Preferences…" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Quit" />
+                        <MenuItem mnemonicParsing="false" onAction="#closeApp" text="Quit" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
@@ -41,9 +41,14 @@
                         <MenuItem mnemonicParsing="false" text="Unselect All" />
                     </items>
                 </Menu>
+            <Menu mnemonicParsing="false" text="Capture">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#showInterfaces" text="Interface Info" />
+              </items>
+            </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="About Scanner" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="About Scanner" />
                     </items>
                 </Menu>
             </menus>
@@ -69,7 +74,7 @@
                             </rowConstraints>
                             <children>
                                 <Label text="Interface" textAlignment="CENTER" />
-                                <ComboBox fx:id="deviceList" onAction="#fillDeviceList" prefWidth="150.0" promptText="Select" GridPane.columnIndex="1" />
+                                <ComboBox fx:id="deviceList" prefWidth="150.0" promptText="Select" GridPane.columnIndex="1" />
                                 <Label text="From File" GridPane.rowIndex="1" />
                                 <CheckBox mnemonicParsing="false" text="Yes" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                     <font>
@@ -176,14 +181,9 @@
                 <ScrollPane prefHeight="-1.0" prefWidth="-1.0">
                     <content>
                         <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="545.0" prefWidth="430.0">
-                            <children>
-                                <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="View" textAlignment="CENTER" textFill="$x2" wrapText="false" />
-                                <ScrollPane layoutX="-5.0" layoutY="-3.0" prefHeight="541.0" prefWidth="441.0">
-                                    <content>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="555.0" prefWidth="452.0" />
-                                    </content>
-                                </ScrollPane>
-                            </children>
+                     <children>
+                        <TextArea fx:id="consoleOutput" prefHeight="548.0" prefWidth="441.0" />
+                     </children>
                         </AnchorPane>
                     </content>
                 </ScrollPane>
@@ -220,9 +220,9 @@
                             </children>
                         </GridPane>
                         <Separator layoutX="10.0" layoutY="35.0" prefWidth="200.0" />
-                        <Button layoutX="34.0" layoutY="377.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="154.0" text="Clear" />
-                        <Button layoutX="34.0" layoutY="419.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="154.0" text="Stop" />
-                        <Button layoutX="34.0" layoutY="461.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="154.0" text="Start" />
+                        <Button layoutX="34.0" layoutY="377.0" mnemonicParsing="false" onAction="#clearCapture" prefHeight="17.0" prefWidth="154.0" text="Clear" />
+                        <Button layoutX="34.0" layoutY="419.0" mnemonicParsing="false" onAction="#stopCapture" prefHeight="17.0" prefWidth="154.0" text="Stop" />
+                        <Button layoutX="34.0" layoutY="461.0" mnemonicParsing="false" onAction="#startCapture" prefHeight="17.0" prefWidth="154.0" text="Start" />
                         <Button layoutX="81.0" layoutY="217.0" mnemonicParsing="false" text="Reset" />
                         <GridPane layoutX="10.0" layoutY="377.0">
                             <columnConstraints>
