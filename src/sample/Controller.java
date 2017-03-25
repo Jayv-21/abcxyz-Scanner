@@ -75,7 +75,14 @@ public class Controller implements Initializable {
 
         // Prevents capture from starting if an interface is not selected
         if (deviceList.getSelectionModel().getSelectedIndex() != -1) {
-            new Thread(this::capturePackets).start();
+            Thread t;
+            t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Controller.this.capturePackets();
+                }
+            });
+            t.start();
         } else {
             System.out.printf("Error: Interface not selected.\n");
         }
@@ -108,12 +115,15 @@ public class Controller implements Initializable {
 
 
     private void printPacket(Packet packet) {
-        Platform.runLater(() -> {
-            if (packet != null) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (packet != null) {
 
-                consoleOutput.appendText(String.valueOf(packet));
-                consoleOutput.appendText("\n");
-                System.out.printf("%s\n", String.valueOf(packet));
+                    consoleOutput.appendText(String.valueOf(packet));
+                    consoleOutput.appendText("\n");
+                    System.out.printf("%s\n", String.valueOf(packet));
+                }
             }
         });
 
