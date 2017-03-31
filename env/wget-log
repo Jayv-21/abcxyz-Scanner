@@ -1,0 +1,16 @@
+--2017-03-20 20:04:01--  https://downloads.sourceforge.net/project/jnetpcap/jnetpcap/1.3/jnetpcap-1.3.0-1.ubuntu.x86_64.tgz?r=http%3A%2F%2Fjnetpcap.com%2Fdownload
+Resolving downloads.sourceforge.net... 216.34.181.59
+Connecting to downloads.sourceforge.net|216.34.181.59|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://dronedata.dl.sourceforge.net/project/jnetpcap/jnetpcap/1.3/jnetpcap-1.3.0-1.ubuntu.x86_64.tgz [following]
+--2017-03-20 20:04:02--  https://dronedata.dl.sourceforge.net/project/jnetpcap/jnetpcap/1.3/jnetpcap-1.3.0-1.ubuntu.x86_64.tgz
+Resolving dronedata.dl.sourceforge.net... 199.119.79.250
+Connecting to dronedata.dl.sourceforge.net|199.119.79.250|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 394358 (385K) [application/octet-stream]
+Saving to: ‘jnetpcap-1.3.0-1.ubuntu.x86_64.tgz?r=http%3A%2F%2Fjnetpcap.com%2Fdownload’
+
+          jnetpcap-   0%[                    ]       0  --.-KB/s               jnetpcap-1.3.0-1.ub 100%[===================>] 385.12K  --.-KB/s    in 0.07s   
+
+2017-03-20 20:04:02 (5.46 MB/s) - ‘jnetpcap-1.3.0-1.ubuntu.x86_64.tgz?r=http%3A%2F%2Fjnetpcap.com%2Fdownload’ saved [394358/394358]
+
