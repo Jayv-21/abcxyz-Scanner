@@ -28,6 +28,7 @@ public class Controller implements Initializable {
 
 
     private int captureStatus;
+    private int lineCount = 0;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -119,10 +120,12 @@ public class Controller implements Initializable {
             @Override
             public void run() {
                 if (packet != null) {
-
-                    consoleOutput.appendText(String.valueOf(packet));
+                    consoleOutput.appendText("Packet Number: ");
+                    consoleOutput.appendText(Integer.toString(lineCount));
+                    consoleOutput.appendText(PacketManager.formatPacketInfo(packet));
                     consoleOutput.appendText("\n");
                     System.out.printf("%s\n", String.valueOf(packet));
+                    lineCount++;
                 }
             }
         });
@@ -140,6 +143,7 @@ public class Controller implements Initializable {
     public void clearCapture() {
         PacketManager.clearCapture();
         consoleOutput.clear();
+        lineCount = 0;
     }
 
     @FXML
