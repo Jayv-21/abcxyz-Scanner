@@ -120,7 +120,7 @@ public class Controller implements Initializable {
             @Override
             public void run() {
                 if (packet != null) {
-                    consoleOutput.appendText("\nPacket Number: ");
+                    consoleOutput.appendText("Packet Number: ");
                     consoleOutput.appendText(Integer.toString(lineCount));
                     consoleOutput.appendText(PacketManager.formatPacketInfo(packet));
                     consoleOutput.appendText("\n");

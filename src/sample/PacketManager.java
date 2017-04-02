@@ -39,36 +39,6 @@ public class PacketManager {
     }
 
     /**
-     * Parse protocol type to correct formatting function
-     * @param packet
-     * @return
-     */
-    static String formatPacketInfo(Packet packet) {
-        String t;
-
-        if (packet instanceof IPPacket) {
-            if (((IPPacket) packet).protocol == ICMP_IPV6) {
-                t = formatPacketICMP((ICMPPacket) packet);
-                return t;
-            } else if (((IPPacket) packet).protocol == ICMP) {
-                t = formatPacketICMP((ICMPPacket) packet);
-                return t;
-            } else if (((IPPacket) packet).protocol == TCP) {
-                t = formatPacketTCP((TCPPacket) packet);
-                return t;
-            } else if (((IPPacket) packet).protocol == UDP) {
-                t = formatPacketUDP((UDPPacket) packet);
-                return t;
-            }
-        } else if (packet instanceof ARPPacket) {
-            t = formatPacketARP((ARPPacket) packet);
-            return t;
-        }
-
-        return String.valueOf(packet);
-    }
-
-    /**
      * Creates a new capture --> old capture is not saved
      */
     static void newCapture() {
@@ -183,6 +153,36 @@ public class PacketManager {
     }
 
     /**
+     * Parse protocol type to correct formatting function
+     * @param packet
+     * @return
+     */
+    static String formatPacketInfo(Packet packet) {
+        String t;
+
+        if (packet instanceof IPPacket) {
+            if (((IPPacket) packet).protocol == ICMP_IPV6) {
+                t = formatPacketICMP((ICMPPacket) packet);
+                return t;
+            } else if (((IPPacket) packet).protocol == ICMP) {
+                t = formatPacketICMP((ICMPPacket) packet);
+                return t;
+            } else if (((IPPacket) packet).protocol == TCP) {
+                t = formatPacketTCP((TCPPacket) packet);
+                return t;
+            } else if (((IPPacket) packet).protocol == UDP) {
+                t = formatPacketUDP((UDPPacket) packet);
+                return t;
+            }
+        } else if (packet instanceof ARPPacket) {
+            t = formatPacketARP((ARPPacket) packet);
+            return t;
+        }
+
+        return String.valueOf(packet);
+    }
+
+    /**
      * Format displayed output for ARP Packet
      * @param packet
      * @return
@@ -193,8 +193,11 @@ public class PacketManager {
         // Line 1 - Packet
         f.append("\n____ARP Packet____");
 
-        // Line 2 - IP
-
+        // Line 2 - Hardware
+        f.append("\nSender Hardware Address: ").append(packet.getSenderHardwareAddress());
+        f.append("\nSender Protocol Address: ").append(packet.getSenderProtocolAddress());
+        f.append("\nTarget Hardware Address: ").append(packet.getTargetHardwareAddress());
+        f.append("\nTarget Protocol Address: ").append(packet.getTargetProtocolAddress());
 
         return f.toString();
     }
@@ -225,14 +228,25 @@ public class PacketManager {
     }
 
     /**
-     * Format displayed output for an IP Packet
+     * Format displayed output for an UDP Packet
      * @param packet
      * @return
      */
     static String formatPacketUDP(UDPPacket packet) {
         StringBuilder f = new StringBuilder(1024);
 
+        // Line 1 - Protocol
         f.append("\n____UDP Packet____");
+
+        // Line 2 - IP
+        f.append("\nSource IP: ");
+        f.append(packet.src_ip.getHostAddress());
+        f.append(" --> Destination IP: ");
+        f.append(packet.dst_ip.getHostAddress());
+
+        // Line 3 - Ports
+        f.append("\nSource Port: ").append(packet.src_port);
+        f.append(" --> Destination Port: ").append(packet.dst_port);
 
         return f.toString();
     }
