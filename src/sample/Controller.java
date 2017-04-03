@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -25,6 +26,11 @@ public class Controller implements Initializable {
     @FXML
     public ComboBox deviceList = new ComboBox<>();
     public TextArea consoleOutput = new TextArea();
+    public TextField totalStats = new TextField();
+    public TextField TCPStat = new TextField();
+    public TextField UDPStat = new TextField();
+    public TextField ICMPStat = new TextField();
+    public TextField ARPStat = new TextField();
 
 
     private int captureStatus;
@@ -110,6 +116,7 @@ public class Controller implements Initializable {
             tempPacket = captor.getPacket();
             PacketManager.addPacket(tempPacket);
             printPacket(tempPacket);
+
         }
         captor.close();
     }
@@ -124,12 +131,30 @@ public class Controller implements Initializable {
                     consoleOutput.appendText(Integer.toString(lineCount));
                     consoleOutput.appendText(PacketManager.formatPacketInfo(packet));
                     consoleOutput.appendText("\n");
+                    updateStats();
                     System.out.printf("%s\n", String.valueOf(packet));
                     lineCount++;
                 }
             }
         });
 
+    }
+
+    private void updateStats(){
+        totalStats.setText(String.valueOf(PacketManager.getTotalCaptured()));
+        TCPStat.setText(String.valueOf(PacketManager.getTotalTCP()));
+        UDPStat.setText(String.valueOf(PacketManager.getTotalUDP()));
+        ICMPStat.setText(String.valueOf(PacketManager.getTotalICMP()));
+        ARPStat.setText(String.valueOf(PacketManager.getTotalARP()));
+    }
+
+    @FXML
+    public void resetStats(){
+        totalStats.setText("");
+        TCPStat.setText("");
+        UDPStat.setText("");
+        ICMPStat.setText("");
+        ARPStat.setText("");
     }
 
     @FXML
