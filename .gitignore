@@ -6,7 +6,6 @@
 *.exe
 *.o
 *.so
-*.class
 .idea/workspace.xml
 
 # Packages #

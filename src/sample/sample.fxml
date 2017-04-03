@@ -187,7 +187,10 @@
                     <content>
                         <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="545.0" prefWidth="430.0">
                      <children>
-                        <TextArea fx:id="consoleOutput" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="548.0" prefWidth="461.0" />
+                        <TextArea fx:id="consoleOutput" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="548.0" prefWidth="461.0">
+                           <font>
+                              <Font size="11.0" />
+                           </font></TextArea>
                      </children>
                         </AnchorPane>
                     </content>
