@@ -20,6 +20,9 @@ public class NetworkInterfaceManager {
         refreshInterfaces();
     }
 
+    /**
+     *
+     */
     public static void refreshInterfaces() {
         netInterface = new ArrayList<>();
         devices = JpcapCaptor.getDeviceList();
@@ -31,10 +34,19 @@ public class NetworkInterfaceManager {
         System.out.printf("\n");
     }
 
+    /**
+     *
+     * @return
+     */
     public static ObservableList<String> activeInterfaces() {
         return FXCollections.observableArrayList(netInterface);
     }
 
+    /**
+     *
+     * @param deviceList
+     * @return
+     */
     public static NetworkInterface getSelectedInterface (ComboBox deviceList) {
         int r = deviceList.getSelectionModel().getSelectedIndex();
 
@@ -43,6 +55,10 @@ public class NetworkInterfaceManager {
         return devices[r];
     }
 
+    /**
+     *
+     * @return
+     */
     public static NetworkInterface [] getInterfaceList() {
         return devices;
     }

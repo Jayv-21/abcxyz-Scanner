@@ -5,13 +5,14 @@ import jpcap.NetworkInterface;
 import jpcap.packet.*;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 /**
  * Created by gregorypontejos on 3/12/17.
  */
-public class PacketManager {
+public class PacketManager implements Serializable {
 
-    private static ArrayList<Packet> currentCapture;
+    private static ArrayList<Packet> currentCapture = new ArrayList<>();
 
     private static int totalCaptured;
     private static int totalTCP;
@@ -25,6 +26,7 @@ public class PacketManager {
      * All protocols used
      */
     private static int ICMP = 1;
+    private static int IGMP = 2;
     private static int TCP = 6;
     private static int UDP = 17;
     private static int ICMP_IPV6 = 58;
@@ -34,8 +36,6 @@ public class PacketManager {
      * Default Constructor
      */
     PacketManager() {
-        newCapture();
-        clearStats();
     }
 
     /**
@@ -54,8 +54,10 @@ public class PacketManager {
      * @param packet
      */
     static void addPacket(Packet packet) {
-        currentCapture.add(packet);
-        if (packet != null) countPacket(packet);
+        if (packet != null) {
+            currentCapture.add(packet);
+            countPacket(packet);
+        }
     }
 
     /**
@@ -71,6 +73,7 @@ public class PacketManager {
         System.out.printf("Total ARP: %s\n", totalARP);
         System.out.printf("Total IP: %s\n", totalIP);
 
+        newCapture();
         clearStats();
     }
 
@@ -173,7 +176,11 @@ public class PacketManager {
             } else if (((IPPacket) packet).protocol == UDP) {
                 t = formatPacketUDP((UDPPacket) packet);
                 return t;
+            } else if (((IPPacket) packet).protocol == IGMP) {
+                t = formatPacketIGMP((IPPacket)packet);
+                return t;
             }
+
         } else if (packet instanceof ARPPacket) {
             t = formatPacketARP((ARPPacket) packet);
             return t;
@@ -191,7 +198,7 @@ public class PacketManager {
         StringBuilder f = new StringBuilder(1024);
 
         // Line 1 - Packet
-        f.append("\n____ARP Packet____");
+        f.append("Packet Type: ARP");
 
         // Line 2 - Hardware
         f.append("\nSender Hardware Address: ").append(packet.getSenderHardwareAddress());
@@ -212,7 +219,7 @@ public class PacketManager {
         StringBuilder f = new StringBuilder(1024);
 
         // Line 1 - Packet
-        f.append("\n____ICMP PACKET____");
+        f.append("Packet Type: ICMP");
 
         // Line 2 - IP
         f.append("\nSource IP: ");
@@ -236,7 +243,7 @@ public class PacketManager {
         StringBuilder f = new StringBuilder(1024);
 
         // Line 1 - Protocol
-        f.append("\n____UDP Packet____");
+        f.append("Packet Type: UDP");
 
         // Line 2 - IP
         f.append("\nSource IP: ");
@@ -261,10 +268,10 @@ public class PacketManager {
         int temp = getTotalCaptured();
 
         // Line 1 - Packet
-        f.append("\n____TCP PACKET____");
+        f.append("Packet Type: TCP");
 
         // Line 2 - IP
-        f.append("\nSource IP: ");
+        f.append("\n\tSource IP: ");
         f.append(packet.src_ip.getHostAddress());
         f.append(" --> Destination IP: ");
         f.append(packet.dst_ip.getHostAddress());
@@ -284,6 +291,26 @@ public class PacketManager {
 
         // Line 5 - Payload
         //f.append("\n-- Payload\n").append(new String(packet.data));
+
+        return f.toString();
+    }
+
+    /**
+     * Format displayed output for IGMP Packet
+     * @param packet
+     * @return
+     */
+    static String formatPacketIGMP(IPPacket packet){
+        StringBuilder f = new StringBuilder();
+
+        // Line 1 - Packet
+        f.append("Packet Type: IGMP");
+
+        // Line 2 - IP
+        f.append("\nSource IP: ");
+        f.append(packet.src_ip.getHostAddress());
+        f.append(" --> Destination IP: ");
+        f.append(packet.dst_ip.getHostAddress());
 
         return f.toString();
     }
@@ -332,5 +359,22 @@ public class PacketManager {
         }
 
         return r;
+    }
+
+    /**
+     *
+     * @param n
+     * @return
+     */
+    public static Packet getPacket(int n) {
+        return currentCapture.get(n);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public static int getCaptureSize(){
+        return currentCapture.size();
     }
 }

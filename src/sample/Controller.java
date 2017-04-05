@@ -3,7 +3,9 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
@@ -25,6 +27,10 @@ public class Controller implements Initializable {
     @FXML
     public ComboBox deviceList = new ComboBox<>();
     public TextArea consoleOutput = new TextArea();
+    public CheckBox filterTCP = new CheckBox();
+    public CheckBox filterUDP = new CheckBox();
+    public CheckBox filterICMP = new CheckBox();
+    public CheckBox filterARP = new CheckBox();
 
 
     private int captureStatus;
@@ -51,6 +57,7 @@ public class Controller implements Initializable {
             e.printStackTrace();
         }
 
+        aboutPopup.setResizable(false);
         aboutPopup.setTitle("About");
         aboutPopup.setScene(new Scene(root, 382,144));
         aboutPopup.show();
@@ -62,11 +69,10 @@ public class Controller implements Initializable {
     public void showInterfaces() throws IOException {
         Pane pane = FXMLLoader.load(getClass().getResource("interfaces.fxml"));
         Stage interfacePopUp = new Stage();
-
+        interfacePopUp.setResizable(false);
         interfacePopUp.setTitle("Network Interface Information");
         interfacePopUp.setScene(new Scene(pane, 600,400));
         interfacePopUp.show();
-
         System.out.print("Interface List PopUp Launched\n");
     }
 
@@ -77,6 +83,7 @@ public class Controller implements Initializable {
         // Prevents capture from starting if an interface is not selected
         if (deviceList.getSelectionModel().getSelectedIndex() != -1) {
             Thread t;
+            consoleOutput.setEditable(true);
             t = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -122,8 +129,9 @@ public class Controller implements Initializable {
                 if (packet != null) {
                     consoleOutput.appendText("Packet Number: ");
                     consoleOutput.appendText(Integer.toString(lineCount));
-                    consoleOutput.appendText(PacketManager.formatPacketInfo(packet));
                     consoleOutput.appendText("\n");
+                    consoleOutput.appendText(PacketManager.formatPacketInfo(packet));
+                    consoleOutput.appendText("\n\n");
                     System.out.printf("%s\n", String.valueOf(packet));
                     lineCount++;
                 }
@@ -135,6 +143,7 @@ public class Controller implements Initializable {
     @FXML
     public void stopCapture() {
         captureStatus = 1;
+        consoleOutput.setEditable(false);
         System.out.printf("Capture ended.\n");
     }
 
@@ -150,6 +159,20 @@ public class Controller implements Initializable {
     public void handleClearStats() {
         PacketManager.clearStats();
     }
+
+    @FXML
+    public void handleViewPayload() throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("PacketViewer.fxml"));
+        Stage payloadPopUp = new Stage();
+        payloadPopUp.setResizable(false);
+        payloadPopUp.setTitle("Packet/Payload Information");
+        payloadPopUp.setScene(new Scene(root, 700,500));
+        payloadPopUp.show();
+        System.out.print("View Payload PopUp Launched\n");
+    }
+
+    @FXML
+    public void handleApplyProtocolFilter() {
+
+    }
 }
-
-
