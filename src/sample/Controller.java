@@ -25,13 +25,25 @@ public class Controller implements Initializable {
     private NetworkInterfaceManager nInterfaces= new NetworkInterfaceManager();
     private PacketManager pManager= new PacketManager();
 
+    // Output and Network objects
     @FXML
     public ComboBox deviceList = new ComboBox<>();
     public TextArea consoleOutput = new TextArea();
+
+    //Filter objects
+    @FXML
     public CheckBox filterTCP = new CheckBox();
     public CheckBox filterUDP = new CheckBox();
     public CheckBox filterICMP = new CheckBox();
     public CheckBox filterARP = new CheckBox();
+    public TextField filterIP = new TextField();
+    public TextField filterSubnet = new TextField();
+    public TextField filterPort = new TextField();
+    public CheckBox filterSourceIP = new CheckBox();
+    public CheckBox filterDestinationIP = new CheckBox();
+
+    // Stats objects
+    @FXML
     public TextField totalStats = new TextField();
     public TextField TCPStat = new TextField();
     public TextField UDPStat = new TextField();
@@ -42,17 +54,28 @@ public class Controller implements Initializable {
     private int captureStatus;
     private int lineCount = 0;
 
+    /**
+     *
+     * @param location
+     * @param resources
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         deviceList.setItems(NetworkInterfaceManager.activeInterfaces());
     }
 
+    /**
+     *
+     */
     @FXML
     void closeApp() {
         Platform.exit();
         System.exit(0);
     }
 
+    /**
+     *
+     */
     @FXML
     void handleAbout() {
         GridPane root = new GridPane();
@@ -71,6 +94,10 @@ public class Controller implements Initializable {
         System.out.printf("Display 'About Scanner' Popup\n");
     }
 
+    /**
+     *
+     * @throws IOException
+     */
     @FXML
     public void showInterfaces() throws IOException {
         Pane pane = FXMLLoader.load(getClass().getResource("interfaces.fxml"));
@@ -82,6 +109,10 @@ public class Controller implements Initializable {
         System.out.print("Interface List PopUp Launched\n");
     }
 
+    /**
+     *
+     * @throws IOException
+     */
     @FXML
     public void startCapture() throws IOException {
         PacketManager.newCapture();
@@ -102,6 +133,9 @@ public class Controller implements Initializable {
         }
     }
 
+    /**
+     *
+     */
     private void capturePackets() {
         Packet tempPacket;
         captureStatus = 0;
@@ -128,7 +162,10 @@ public class Controller implements Initializable {
         captor.close();
     }
 
-
+    /**
+     *
+     * @param packet
+     */
     private void printPacket(Packet packet) {
         Platform.runLater(new Runnable() {
             @Override
@@ -148,6 +185,9 @@ public class Controller implements Initializable {
 
     }
 
+    /**
+     *
+     */
     private void updateStats(){
         totalStats.setText(String.valueOf(PacketManager.getTotalCaptured()));
         TCPStat.setText(String.valueOf(PacketManager.getTotalTCP()));
@@ -156,6 +196,9 @@ public class Controller implements Initializable {
         ARPStat.setText(String.valueOf(PacketManager.getTotalARP()));
     }
 
+    /**
+     *
+     */
     @FXML
     public void resetStats(){
         totalStats.setText("");
@@ -165,6 +208,9 @@ public class Controller implements Initializable {
         ARPStat.setText("");
     }
 
+    /**
+     *
+     */
     @FXML
     public void stopCapture() {
         captureStatus = 1;
@@ -172,7 +218,9 @@ public class Controller implements Initializable {
         System.out.printf("Capture ended.\n");
     }
 
-
+    /**
+     *
+     */
     @FXML
     public void clearCapture() {
         PacketManager.clearCapture();
@@ -180,11 +228,18 @@ public class Controller implements Initializable {
         lineCount = 0;
     }
 
+    /**
+     *
+     */
     @FXML
     public void handleClearStats() {
         PacketManager.clearStats();
     }
 
+    /**
+     *
+     * @throws IOException
+     */
     @FXML
     public void handleViewPayload() throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("PacketViewer.fxml"));
@@ -196,8 +251,32 @@ public class Controller implements Initializable {
         System.out.print("View Payload PopUp Launched\n");
     }
 
+    /**
+     *
+     */
     @FXML
-    public void handleApplyProtocolFilter() {
+    public void handleApplyProtocolFilters() {
 
     }
+
+    /**
+     *
+     */
+    @FXML
+    public void handleSourceIPCheckBox() {
+        if (filterSourceIP.isSelected()) {
+            filterDestinationIP.setSelected(false);
+        }
+    }
+
+    /**
+     *
+     */
+    @FXML
+    public void handleDestinationIPCheckBox() {
+        if (filterDestinationIP.isSelected()) {
+            filterSourceIP.setSelected(false);
+        }
+    }
+
 }

@@ -62,7 +62,7 @@
             <items>
                 <AnchorPane maxWidth="-Infinity" minWidth="-Infinity">
                     <children>
-                        <Label alignment="CENTER" layoutX="11.0" layoutY="14.0" minWidth="60.0" prefWidth="-1.0" style="&#10;" text="Scanner" textAlignment="CENTER" wrapText="false">
+                        <Label alignment="CENTER" layoutX="71.0" layoutY="14.0" minWidth="60.0" prefWidth="-1.0" style="&#10;" text="Scanner" textAlignment="CENTER" wrapText="false">
                             <font>
                                 <Font size="18.0" fx:id="x1" />
                             </font>
@@ -88,7 +88,7 @@
                                 </CheckBox>
                             </children>
                         </GridPane>
-                        <Label layoutX="9.0" layoutY="146.0" text="Protocol Filters">
+                        <Label layoutX="85.0" layoutY="146.0" text="Filters">
                             <font>
                                 <Font size="18.0" />
                             </font>
@@ -132,7 +132,7 @@
                                 </CheckBox>
                             </children>
                         </GridPane>
-                        <GridPane layoutX="11.0" layoutY="398.0">
+                        <GridPane layoutX="6.0" layoutY="327.0">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -148,39 +148,30 @@
                                 <Label text="IP" />
                                 <Label text="Netmask" GridPane.rowIndex="1" />
                                 <Label text="Port" GridPane.rowIndex="2" />
-                                <Label text="Source" GridPane.rowIndex="3" />
-                                <Label text="Destination" GridPane.rowIndex="4" />
+                                <Label text="Source IP" GridPane.rowIndex="3" />
+                                <Label text="Destination IP" GridPane.rowIndex="4" />
                                 <TextField GridPane.columnIndex="1" />
                                 <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                 <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                <CheckBox mnemonicParsing="false" text="Yes" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                <CheckBox fx:id="filterSourceIP" mnemonicParsing="false" onAction="#handleSourceIPCheckBox" onMouseClicked="#handleSourceIPCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
                                 </CheckBox>
-                                <CheckBox mnemonicParsing="false" text="Yes" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                <CheckBox fx:id="filterDestinationIP" mnemonicParsing="false" onAction="#handleDestinationIPCheckBox" onMouseClicked="#handleDestinationIPCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
                                 </CheckBox>
                             </children>
                         </GridPane>
-                        <Label layoutX="14.0" layoutY="358.0" text="Network Filters">
+                        <Label layoutX="14.0" layoutY="358.0">
                             <font>
                                 <Font size="18.0" />
                             </font>
                         </Label>
-                        <Separator layoutX="11.0" layoutY="381.0" prefWidth="200.0" />
-                        <ToggleButton layoutX="156.0" layoutY="360.0" mnemonicParsing="false" text="Enable">
-                            <font>
-                                <Font size="11.0" />
-                            </font>
-                        </ToggleButton>
-                  <Button layoutX="159.0" layoutY="147.0" mnemonicParsing="false" onAction="#handleApplyProtocolFilter" text="Apply">
-                     <font>
-                        <Font size="10.0" />
-                     </font>
-                  </Button>
+                        <Separator layoutX="8.0" layoutY="314.0" prefWidth="200.0" />
+                  <Button layoutX="79.0" layoutY="488.0" mnemonicParsing="false" onAction="#handleApplyProtocolFilters" text="Apply" />
                     </children>
                 </AnchorPane>
                 <ScrollPane prefHeight="-1.0" prefWidth="-1.0">
