@@ -1,19 +1,19 @@
 package sample;
 
-import jpcap.JpcapCaptor;
-import jpcap.NetworkInterface;
 import jpcap.packet.*;
-
-import java.io.IOException;
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.ArrayList;
+
 /**
  * Created by gregorypontejos on 3/12/17.
  */
 public class PacketManager implements Serializable {
 
     private static ArrayList<Packet> currentCapture = new ArrayList<>();
+    private static ArrayList<Packet> filteredCapture = new ArrayList<>();
 
+    // Stats variables
     private static int totalCaptured;
     private static int totalTCP;
     private static int totalUDP;
@@ -21,10 +21,16 @@ public class PacketManager implements Serializable {
     private static int totalARP;
     private static int totalIP;
 
+    // Protocol variables
+    private static boolean filterTCP;
+    private static boolean filterUDP;
+    private static boolean filterICMP;
+    private static boolean filterARP;
+    private static InetAddress filterIP;
+    private static int filterPort;
+    private static boolean filterIsSourceIP;
 
-    /**
-     * All protocols used
-     */
+    // Protocols used
     private static int ICMP = 1;
     private static int IGMP = 2;
     private static int TCP = 6;
@@ -376,5 +382,41 @@ public class PacketManager implements Serializable {
      */
     public static int getCaptureSize(){
         return currentCapture.size();
+    }
+
+    /**
+     * Populate an ArrayList containing Filtered Packets
+     * @return
+     */
+    public static ArrayList<Packet> populateFilteredPackets() {
+
+
+        return filteredCapture;
+    }
+
+    /**
+     * Assign protocol filters to PacketManager
+     * @param tcp
+     * @param udp
+     * @param icmp
+     * @param arp
+     */
+    public static void setProtocolFilters(boolean tcp, boolean udp, boolean icmp, boolean arp) {
+        filterTCP = tcp;
+        filterUDP = udp;
+        filterICMP = icmp;
+        filterARP = arp;
+    }
+
+    /**
+     * Assign ip filters to PacketManager
+     * @param ip
+     * @param port
+     * @param isSource
+     */
+    public static void setIPFilters(InetAddress ip, int port, boolean isSource) {
+        filterIP = ip;
+        filterPort = port;
+        filterIsSourceIP = isSource;
     }
 }

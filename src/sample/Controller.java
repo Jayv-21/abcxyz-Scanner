@@ -37,7 +37,6 @@ public class Controller implements Initializable {
     public CheckBox filterICMP = new CheckBox();
     public CheckBox filterARP = new CheckBox();
     public TextField filterIP = new TextField();
-    public TextField filterSubnet = new TextField();
     public TextField filterPort = new TextField();
     public CheckBox filterSourceIP = new CheckBox();
     public CheckBox filterDestinationIP = new CheckBox();

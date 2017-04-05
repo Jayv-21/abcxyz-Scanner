@@ -142,23 +142,20 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
                                 <Label text="IP" />
-                                <Label text="Netmask" GridPane.rowIndex="1" />
-                                <Label text="Port" GridPane.rowIndex="2" />
-                                <Label text="Source IP" GridPane.rowIndex="3" />
-                                <Label text="Destination IP" GridPane.rowIndex="4" />
-                                <TextField GridPane.columnIndex="1" />
-                                <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                <CheckBox fx:id="filterSourceIP" mnemonicParsing="false" onAction="#handleSourceIPCheckBox" onMouseClicked="#handleSourceIPCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                <Label text="Port" GridPane.rowIndex="1" />
+                                <Label text="Source IP" GridPane.rowIndex="2" />
+                                <Label text="Destination IP" GridPane.rowIndex="3" />
+                                <TextField fx:id="filterIP" GridPane.columnIndex="1" />
+                                <TextField fx:id="filterPort" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                <CheckBox fx:id="filterSourceIP" mnemonicParsing="false" onAction="#handleSourceIPCheckBox" onMouseClicked="#handleSourceIPCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
                                 </CheckBox>
-                                <CheckBox fx:id="filterDestinationIP" mnemonicParsing="false" onAction="#handleDestinationIPCheckBox" onMouseClicked="#handleDestinationIPCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                <CheckBox fx:id="filterDestinationIP" mnemonicParsing="false" onAction="#handleDestinationIPCheckBox" onMouseClicked="#handleDestinationIPCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
