@@ -168,7 +168,8 @@
                             </font>
                         </Label>
                         <Separator layoutX="8.0" layoutY="314.0" prefWidth="200.0" />
-                  <Button layoutX="79.0" layoutY="488.0" mnemonicParsing="false" onAction="#handleApplyProtocolFilters" text="Apply" />
+                  <Button layoutX="32.0" layoutY="447.0" mnemonicParsing="false" onAction="#handleApplyProtocolFilters" text="Apply" />
+                  <Button layoutX="138.0" layoutY="447.0" mnemonicParsing="false" onAction="#handleClearProtocolFilters" text="Clear" />
                     </children>
                 </AnchorPane>
                 <ScrollPane prefHeight="-1.0" prefWidth="-1.0">

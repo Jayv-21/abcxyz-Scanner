@@ -16,7 +16,9 @@ import jpcap.JpcapCaptor;
 import jpcap.packet.Packet;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 
 
@@ -52,6 +54,9 @@ public class Controller implements Initializable {
 
     private int captureStatus;
     private int lineCount = 0;
+
+    // 0 if filters are not applied, 1 if filters are applied
+    private int filterApplied = 0;
 
     /**
      *
@@ -254,12 +259,59 @@ public class Controller implements Initializable {
      *
      */
     @FXML
-    public void handleApplyProtocolFilters() {
+    public void handleApplyProtocolFilters() throws UnknownHostException {
+        filterApplied = 1;
 
+        // Set filters
+        if (!filterIP.getText().isEmpty()) {
+            PacketManager.setIPAddressFilter(InetAddress.getByName(filterIP.getText()));
+        }
+        if (!filterPort.getText().isEmpty()) {
+            PacketManager.setSourcePort(Integer.parseInt(filterPort.getText()), filterSourceIP.isSelected());
+        }
+        PacketManager.setProtocolFilters(filterTCP.isSelected(),
+                filterUDP.isSelected(),
+                filterICMP.isSelected(),
+                filterARP.isSelected());
+        PacketManager.populateFilteredPackets();
+
+        // Print packets to console
+        consoleOutput.setEditable(true);
+        consoleOutput.clear();
+
+        for (int i = 0; i < PacketManager.getFilteredCaptureSize(); i++) {
+            consoleOutput.appendText("Packet Number: ");
+            consoleOutput.appendText(Integer.toString(i));
+            consoleOutput.appendText("\n");
+            consoleOutput.appendText(PacketManager.formatPacketInfo(PacketManager.getCurrentFilteredPacket(i)));
+            consoleOutput.appendText("\n\n");
+            lineCount++;
+        }
+        consoleOutput.setEditable(false);
     }
 
     /**
      *
+     */
+    @FXML
+    public void handleClearProtocolFilters() {
+        PacketManager.clearFilters();
+        clearFilterText();
+        consoleOutput.setEditable(true);
+        consoleOutput.clear();
+
+        for (int i = 0; i < PacketManager.getCurrentCaptureSize(); i++) {
+            consoleOutput.appendText("Packet Number: ");
+            consoleOutput.appendText(Integer.toString(i));
+            consoleOutput.appendText("\n");
+            consoleOutput.appendText(PacketManager.formatPacketInfo(PacketManager.getCurrentCapturePacket(i)));
+            consoleOutput.appendText("\n\n");
+        }
+
+        consoleOutput.setEditable(false);
+    }
+    /**
+     * Verifies destination IP box is not checked
      */
     @FXML
     public void handleSourceIPCheckBox() {
@@ -269,7 +321,7 @@ public class Controller implements Initializable {
     }
 
     /**
-     *
+     * Verifies source IP box is not checked
      */
     @FXML
     public void handleDestinationIPCheckBox() {
@@ -278,4 +330,13 @@ public class Controller implements Initializable {
         }
     }
 
+    private void clearFilterText() {
+        filterTCP.setSelected(false);
+        filterUDP.setSelected(false);
+        filterICMP.setSelected(false);
+        filterIP.clear();
+        filterPort.clear();
+        filterSourceIP.setSelected(false);
+        filterDestinationIP.setSelected(false);
+    }
 }

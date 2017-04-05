@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class PacketManager implements Serializable {
 
     private static ArrayList<Packet> currentCapture = new ArrayList<>();
-    private static ArrayList<Packet> filteredCapture = new ArrayList<>();
+    private static ArrayList<Packet> filteredCapture;
 
     // Stats variables
     private static int totalCaptured;
@@ -21,14 +21,16 @@ public class PacketManager implements Serializable {
     private static int totalARP;
     private static int totalIP;
 
-    // Protocol variables
-    private static boolean filterTCP;
-    private static boolean filterUDP;
-    private static boolean filterICMP;
-    private static boolean filterARP;
+    // Protocol filter variables
+    private static boolean filterTCP = false;
+    private static boolean filterUDP = false;
+    private static boolean filterICMP = false;
+    private static boolean filterARP = false;
+    private static boolean filterIGMP = false;
     private static InetAddress filterIP;
     private static int filterPort;
     private static boolean filterIsSourceIP;
+    private static boolean filterApplied;
 
     // Protocols used
     private static int ICMP = 1;
@@ -186,7 +188,6 @@ public class PacketManager implements Serializable {
                 t = formatPacketIGMP((IPPacket)packet);
                 return t;
             }
-
         } else if (packet instanceof ARPPacket) {
             t = formatPacketARP((ARPPacket) packet);
             return t;
@@ -368,28 +369,76 @@ public class PacketManager implements Serializable {
     }
 
     /**
-     *
+     * Get the specified packet number from the original capture ArrayList
      * @param n
      * @return
      */
-    public static Packet getPacket(int n) {
+    public static Packet getCurrentCapturePacket(int n) {
         return currentCapture.get(n);
     }
 
     /**
-     *
+     * Get the specified packet number from the filtered ArrayList
+     * @param n
      * @return
      */
-    public static int getCaptureSize(){
+    public static Packet getCurrentFilteredPacket(int n) { return filteredCapture.get(n); }
+
+    /**
+     * Get total capture size
+     * @return
+     */
+    public static int getCurrentCaptureSize(){
         return currentCapture.size();
     }
+
+    /**
+     * Get total size of filtered capture
+     * @return
+     */
+    public static int getFilteredCaptureSize() { return filteredCapture.size(); }
 
     /**
      * Populate an ArrayList containing Filtered Packets
      * @return
      */
     public static ArrayList<Packet> populateFilteredPackets() {
+        filteredCapture = new ArrayList<>();
+        Packet packet;
 
+        for (int i = 0; i < currentCapture.size(); i++) {
+            packet = currentCapture.get(i);
+
+            if (packet instanceof IPPacket) {
+                if (filterICMP) {
+                    if (((IPPacket) packet).protocol != ICMP_IPV6) {
+                        continue;
+                    } else if (!(((IPPacket) packet).protocol != ICMP)) {
+                        continue;
+                    }
+                }
+                if (filterTCP) {
+                    if (((IPPacket) packet).protocol != TCP) {
+                        continue;
+                    }
+                }
+                if (filterUDP) {
+                    if (((IPPacket) packet).protocol != UDP) {
+                       continue;
+                    }
+                }
+                if (filterIGMP)
+                if (((IPPacket) packet).protocol != IGMP) {
+                    continue;
+                }
+            }
+            if (filterARP) {
+                if (!(packet instanceof ARPPacket)) {
+                    continue;
+                }
+            }
+            filteredCapture.add(packet);
+        }
 
         return filteredCapture;
     }
@@ -402,6 +451,7 @@ public class PacketManager implements Serializable {
      * @param arp
      */
     public static void setProtocolFilters(boolean tcp, boolean udp, boolean icmp, boolean arp) {
+        filterApplied = true;
         filterTCP = tcp;
         filterUDP = udp;
         filterICMP = icmp;
@@ -411,12 +461,36 @@ public class PacketManager implements Serializable {
     /**
      * Assign ip filters to PacketManager
      * @param ip
+     */
+    public static void setIPAddressFilter(InetAddress ip) {
+        filterApplied = true;
+        filterIP = ip;
+
+    }
+
+    /**
+     *
      * @param port
      * @param isSource
      */
-    public static void setIPFilters(InetAddress ip, int port, boolean isSource) {
-        filterIP = ip;
+    public static void setSourcePort(int port, boolean isSource){
+        filterApplied = true;
         filterPort = port;
         filterIsSourceIP = isSource;
+    }
+
+    /**
+     * Check if a filter is applied
+     * @return
+     */
+    public static boolean isFilterApplied() {
+        return filterApplied;
+    }
+
+    /**
+     * Reset status to reflect that there are no filters applied
+     */
+    public static void clearFilters() {
+        filterApplied = false;
     }
 }
