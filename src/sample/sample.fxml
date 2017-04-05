@@ -48,7 +48,7 @@
             </Menu>
             <Menu mnemonicParsing="false" text="View">
               <items>
-                <MenuItem mnemonicParsing="false" text="View Payload" />
+                <MenuItem mnemonicParsing="false" onAction="#handleViewPayload" text="Packet Viewer" />
               </items>
             </Menu>
                 <Menu mnemonicParsing="false" text="Help">
@@ -110,22 +110,22 @@
                                 <Label text="UDP" GridPane.rowIndex="1" />
                                 <Label text="ICMP" GridPane.rowIndex="2" />
                                 <Label text="ARP" GridPane.rowIndex="3" />
-                                <CheckBox mnemonicParsing="false" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1">
+                                <CheckBox fx:id="filterTCP" mnemonicParsing="false" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
                                 </CheckBox>
-                                <CheckBox mnemonicParsing="false" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <CheckBox fx:id="filterUDP" mnemonicParsing="false" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
                                 </CheckBox>
-                                <CheckBox mnemonicParsing="false" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                <CheckBox fx:id="filterICMP" mnemonicParsing="false" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
                                 </CheckBox>
-                                <CheckBox mnemonicParsing="false" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                <CheckBox fx:id="filterARP" mnemonicParsing="false" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
@@ -176,11 +176,11 @@
                                 <Font size="11.0" />
                             </font>
                         </ToggleButton>
-                        <ToggleButton layoutX="156.0" layoutY="148.0" mnemonicParsing="false" text="Enable">
-                            <font>
-                                <Font size="11.0" />
-                            </font>
-                        </ToggleButton>
+                  <Button layoutX="159.0" layoutY="147.0" mnemonicParsing="false" onAction="#handleApplyProtocolFilter" text="Apply">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Button>
                     </children>
                 </AnchorPane>
                 <ScrollPane prefHeight="-1.0" prefWidth="-1.0">
