@@ -1,19 +1,20 @@
 package sample;
 
-import jpcap.JpcapCaptor;
-import jpcap.NetworkInterface;
 import jpcap.packet.*;
-
-import java.io.IOException;
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+
 /**
  * Created by gregorypontejos on 3/12/17.
  */
 public class PacketManager implements Serializable {
 
     private static ArrayList<Packet> currentCapture = new ArrayList<>();
+    private static ArrayList<Packet> filteredCapture;
 
+    // Stats variables
     private static int totalCaptured;
     private static int totalTCP;
     private static int totalUDP;
@@ -21,10 +22,19 @@ public class PacketManager implements Serializable {
     private static int totalARP;
     private static int totalIP;
 
+    // Protocol filter variables
+    private static boolean filterTCP = false;
+    private static boolean filterUDP = false;
+    private static boolean filterICMP = false;
+    private static boolean filterARP = false;
+    private static boolean filterIGMP = false;
+    private static InetAddress filterIP = null;
+    private static int filterPort = -1;
+    private static boolean filterIsSourceSelected = false;
+    private static boolean filterIsDestinationSelected = false;
+    private static boolean filterApplied;
 
-    /**
-     * All protocols used
-     */
+    // Protocols used
     private static int ICMP = 1;
     private static int IGMP = 2;
     private static int TCP = 6;
@@ -148,14 +158,6 @@ public class PacketManager implements Serializable {
     }
 
     /**
-     * Returns the current number of IP Packets captured
-     * @return
-     */
-    static int getTotalIP() {
-        return totalIP;
-    }
-
-    /**
      * Parse protocol type to correct formatting function
      * @param packet
      * @return
@@ -180,7 +182,6 @@ public class PacketManager implements Serializable {
                 t = formatPacketIGMP((IPPacket)packet);
                 return t;
             }
-
         } else if (packet instanceof ARPPacket) {
             t = formatPacketARP((ARPPacket) packet);
             return t;
@@ -362,19 +363,234 @@ public class PacketManager implements Serializable {
     }
 
     /**
-     *
+     * Get the specified packet number from the original capture ArrayList
      * @param n
      * @return
      */
-    public static Packet getPacket(int n) {
+    public static Packet getCurrentCapturePacket(int n) {
         return currentCapture.get(n);
     }
 
     /**
-     *
+     * Get the specified packet number from the filtered ArrayList
+     * @param n
      * @return
      */
-    public static int getCaptureSize(){
+    public static Packet getCurrentFilteredPacket(int n) { return filteredCapture.get(n); }
+
+    /**
+     * Get total capture size
+     * @return
+     */
+    public static int getCurrentCaptureSize(){
         return currentCapture.size();
+    }
+
+    /**
+     * Get total size of filtered capture
+     * @return
+     */
+    public static int getFilteredCaptureSize() { return filteredCapture.size(); }
+
+    /**
+     * Populate an ArrayList containing Filtered Packets
+     * @return
+     */
+    public static ArrayList<Packet> populateFilteredPackets() {
+        filteredCapture = new ArrayList<>();
+        Packet packet;
+
+        for (int i = 0; i < currentCapture.size(); i++) {
+            packet = currentCapture.get(i);
+
+            // Protocol packet filters
+            if (packet instanceof IPPacket) {
+                if (filterICMP) {
+                    if (((IPPacket) packet).protocol != ICMP_IPV6) {
+                        continue;
+                    } else if (!(((IPPacket) packet).protocol != ICMP)) {
+                        continue;
+                    }
+                }
+                if (filterTCP) {
+                    if (((IPPacket) packet).protocol != TCP) {
+                        continue;
+                    }
+                }
+                if (filterUDP) {
+                    if (((IPPacket) packet).protocol != UDP) {
+                       continue;
+                    }
+                }
+                if (filterIGMP)
+                if (((IPPacket) packet).protocol != IGMP) {
+                    continue;
+                }
+            }
+            if (filterARP) {
+                if (!(packet instanceof ARPPacket)) {
+                    continue;
+                }
+            }
+
+            // IP and Port filters
+
+            // If source or destination are not selected
+            if (filterIsDestinationSelected == filterIsSourceSelected) {
+                // ARP packets do not reference ports
+                if (filterPort >= 0) {
+                    if (packet instanceof TCPPacket) {
+                        if (((TCPPacket) packet).src_port != filterPort ||
+                                ((TCPPacket) packet).dst_port != filterPort) {
+                            continue;
+                        }
+                    }
+                    if (packet instanceof UDPPacket) {
+                        if (((UDPPacket) packet).src_port != filterPort ||
+                                ((UDPPacket) packet).dst_port != filterPort) {
+                            continue;
+                        }
+                    }
+                }
+
+                // IP filter
+                if (filterIP != null) {
+                    if (packet instanceof IPPacket) {
+                        if (!(((IPPacket)packet).src_ip.equals(filterIP) ||
+                                ((IPPacket)packet).dst_ip.equals(filterIP))) {
+                            continue;
+                        }
+                    }
+                    if (packet instanceof ARPPacket) { continue; }
+                }
+
+                // Special Case -- ARP
+                if ((packet instanceof ARPPacket) && filterARP == false) { continue; }
+
+            }
+
+            // If source is selected
+            if (filterIsSourceSelected) {
+                // ARP packets do not reference ports
+                if (filterPort >= 0) {
+                    if (packet instanceof TCPPacket) {
+                        if (((TCPPacket) packet).src_port != filterPort) {
+                            continue;
+                        }
+                    }
+                    if (packet instanceof UDPPacket) {
+                        if (((UDPPacket) packet).src_port != filterPort) {
+                            continue;
+                        }
+                    }
+                }
+
+                // IP filter
+                if (filterIP != null) {
+                    if (packet instanceof IPPacket) {
+                        if (!((IPPacket)packet).src_ip.equals(filterIP)) {
+                            continue;
+                        }
+                    }
+                }
+
+                // Special Case -- ARP
+                if ((packet instanceof ARPPacket) && filterARP == false) { continue; }
+            }
+
+            // If destination is selected
+            if (filterIsDestinationSelected) {
+                // ARP packets do not reference ports
+                if (filterPort >= 0) {
+                    if (packet instanceof TCPPacket) {
+                        if (((TCPPacket) packet).dst_port != filterPort) {
+                            continue;
+                        }
+                    }
+                    if (packet instanceof UDPPacket) {
+                        if (((UDPPacket) packet).dst_port != filterPort) {
+                            continue;
+                        }
+                    }
+                }
+
+                // IP filter
+                if (filterIP != null) {
+                    if (packet instanceof IPPacket) {
+                        if (!((IPPacket)packet).dst_ip.equals(filterIP)) {
+                            continue;
+                        }
+                    }
+                    if (packet instanceof ARPPacket) { continue; }
+                }
+
+                // Special Case -- ARP
+                if ((packet instanceof ARPPacket) && filterARP == false) { continue; }
+            }
+
+            filteredCapture.add(packet);
+        }
+
+        return filteredCapture;
+    }
+
+    /**
+     * Assign protocol filters to PacketManager
+     * @param tcp
+     * @param udp
+     * @param icmp
+     * @param arp
+     */
+    public static void setProtocolFilters(boolean tcp, boolean udp, boolean icmp, boolean arp) {
+        filterApplied = true;
+        filterTCP = tcp;
+        filterUDP = udp;
+        filterICMP = icmp;
+        filterARP = arp;
+    }
+
+    /**
+     * Assign ip filters to PacketManager
+     * @param ip
+     */
+    public static void setIPAddressFilter(InetAddress ip) {
+        filterApplied = true;
+        filterIP = ip;
+
+    }
+
+    /**
+     *
+     * @param port
+     * @param isSource
+     */
+    public static void setSourcePort(int port, boolean isSource, boolean isDestination) {
+        filterApplied = true;
+        filterPort = port;
+        filterIsSourceSelected = isSource;
+        filterIsDestinationSelected = isDestination;
+    }
+
+    /**
+     * Check if a filter is applied
+     * @return
+     */
+    public static boolean isFilterApplied() {
+        return filterApplied;
+    }
+
+    /**
+     * Reset status to reflect that there are no filters applied
+     */
+    public static void clearFilters() throws UnknownHostException {
+        filterApplied = false;
+        filterIP = null;
+        filterTCP = false;
+        filterUDP = false;
+        filterICMP = false;
+        filterARP = false;
+        filterPort = -1;
+        filterIsSourceSelected = false;
+        filterIsDestinationSelected = false;
     }
 }

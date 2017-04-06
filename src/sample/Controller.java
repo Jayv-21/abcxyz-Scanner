@@ -5,10 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -16,7 +13,9 @@ import jpcap.JpcapCaptor;
 import jpcap.packet.Packet;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 
 
@@ -25,13 +24,26 @@ public class Controller implements Initializable {
     private NetworkInterfaceManager nInterfaces= new NetworkInterfaceManager();
     private PacketManager pManager= new PacketManager();
 
+    // Output and Network objects
     @FXML
     public ComboBox deviceList = new ComboBox<>();
     public TextArea consoleOutput = new TextArea();
+
+    //Filter objects
+    @FXML
     public CheckBox filterTCP = new CheckBox();
     public CheckBox filterUDP = new CheckBox();
     public CheckBox filterICMP = new CheckBox();
     public CheckBox filterARP = new CheckBox();
+    public TextField filterIP = new TextField();
+    public TextField filterPort = new TextField();
+    public CheckBox filterSource = new CheckBox();
+    public CheckBox filterDestination = new CheckBox();
+    public Button filterApplyButton = new Button();
+    public Button filterClearButton = new Button();
+
+    // Stats objects
+    @FXML
     public TextField totalStats = new TextField();
     public TextField TCPStat = new TextField();
     public TextField UDPStat = new TextField();
@@ -42,17 +54,32 @@ public class Controller implements Initializable {
     private int captureStatus;
     private int lineCount = 0;
 
+    // 0 if filters are not applied, 1 if filters are applied
+    private int filterApplied = 0;
+
+    /**
+     *
+     * @param location
+     * @param resources
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         deviceList.setItems(NetworkInterfaceManager.activeInterfaces());
+        disableAllFilterFields();
     }
 
+    /**
+     *
+     */
     @FXML
     void closeApp() {
         Platform.exit();
         System.exit(0);
     }
 
+    /**
+     *
+     */
     @FXML
     void handleAbout() {
         GridPane root = new GridPane();
@@ -71,6 +98,10 @@ public class Controller implements Initializable {
         System.out.printf("Display 'About Scanner' Popup\n");
     }
 
+    /**
+     *
+     * @throws IOException
+     */
     @FXML
     public void showInterfaces() throws IOException {
         Pane pane = FXMLLoader.load(getClass().getResource("interfaces.fxml"));
@@ -82,6 +113,10 @@ public class Controller implements Initializable {
         System.out.print("Interface List PopUp Launched\n");
     }
 
+    /**
+     *
+     * @throws IOException
+     */
     @FXML
     public void startCapture() throws IOException {
         PacketManager.newCapture();
@@ -102,6 +137,9 @@ public class Controller implements Initializable {
         }
     }
 
+    /**
+     *
+     */
     private void capturePackets() {
         Packet tempPacket;
         captureStatus = 0;
@@ -128,7 +166,10 @@ public class Controller implements Initializable {
         captor.close();
     }
 
-
+    /**
+     *
+     * @param packet
+     */
     private void printPacket(Packet packet) {
         Platform.runLater(new Runnable() {
             @Override
@@ -148,6 +189,9 @@ public class Controller implements Initializable {
 
     }
 
+    /**
+     *
+     */
     private void updateStats(){
         totalStats.setText(String.valueOf(PacketManager.getTotalCaptured()));
         TCPStat.setText(String.valueOf(PacketManager.getTotalTCP()));
@@ -156,6 +200,9 @@ public class Controller implements Initializable {
         ARPStat.setText(String.valueOf(PacketManager.getTotalARP()));
     }
 
+    /**
+     *
+     */
     @FXML
     public void resetStats(){
         totalStats.setText("");
@@ -165,26 +212,44 @@ public class Controller implements Initializable {
         ARPStat.setText("");
     }
 
+    /**
+     *
+     */
     @FXML
     public void stopCapture() {
         captureStatus = 1;
         consoleOutput.setEditable(false);
         System.out.printf("Capture ended.\n");
+        if (PacketManager.getCurrentCaptureSize() > 0) {
+            enableAllFilterFields();
+        }
     }
 
-
+    /**
+     *
+     */
     @FXML
-    public void clearCapture() {
+    public void clearCapture() throws UnknownHostException {
         PacketManager.clearCapture();
         consoleOutput.clear();
         lineCount = 0;
+
+        handleClearProtocolFilters();
+        disableAllFilterFields();
     }
 
+    /**
+     *
+     */
     @FXML
     public void handleClearStats() {
         PacketManager.clearStats();
     }
 
+    /**
+     *
+     * @throws IOException
+     */
     @FXML
     public void handleViewPayload() throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("PacketViewer.fxml"));
@@ -196,8 +261,208 @@ public class Controller implements Initializable {
         System.out.print("View Payload PopUp Launched\n");
     }
 
+    /**
+     *
+     */
     @FXML
-    public void handleApplyProtocolFilter() {
+    public void handleApplyProtocolFilters() throws UnknownHostException {
+        filterApplied = 1;
 
+        // Set filters
+        if (!filterIP.getText().isEmpty() &&
+                isIPValid(filterIP.getText())) {
+                PacketManager.setIPAddressFilter(InetAddress.getByName(filterIP.getText()));
+        }
+        if (!filterPort.getText().isEmpty()) {
+            PacketManager.setSourcePort(Integer.parseInt(filterPort.getText()),
+                    filterSource.isSelected(),
+                    filterDestination.isSelected());
+        }
+        PacketManager.setProtocolFilters(filterTCP.isSelected(),
+                filterUDP.isSelected(),
+                filterICMP.isSelected(),
+                filterARP.isSelected());
+        PacketManager.populateFilteredPackets();
+
+        // Print packets to console
+        consoleOutput.setEditable(true);
+        consoleOutput.clear();
+
+        for (int i = 0; i < PacketManager.getFilteredCaptureSize(); i++) {
+            consoleOutput.appendText("Packet Number: ");
+            consoleOutput.appendText(Integer.toString(i));
+            consoleOutput.appendText("\n");
+            consoleOutput.appendText(PacketManager.formatPacketInfo(PacketManager.getCurrentFilteredPacket(i)));
+            consoleOutput.appendText("\n\n");
+            lineCount++;
+        }
+        consoleOutput.setEditable(false);
+    }
+
+    /**
+     *
+     */
+    @FXML
+    public void handleClearProtocolFilters() throws UnknownHostException {
+        PacketManager.clearFilters();
+        clearFilterText();
+        consoleOutput.setEditable(true);
+        consoleOutput.clear();
+
+        for (int i = 0; i < PacketManager.getCurrentCaptureSize(); i++) {
+            consoleOutput.appendText("Packet Number: ");
+            consoleOutput.appendText(Integer.toString(i));
+            consoleOutput.appendText("\n");
+            consoleOutput.appendText(PacketManager.formatPacketInfo(PacketManager.getCurrentCapturePacket(i)));
+            consoleOutput.appendText("\n\n");
+        }
+
+        consoleOutput.setEditable(false);
+    }
+    /**
+     * Verifies destination IP box is not checked
+     */
+    @FXML
+    public void handleSourceIPCheckBox() {
+        if (filterSource.isSelected()) {
+            filterDestination.setSelected(false);
+        }
+    }
+
+    /**
+     * Verifies source IP box is not checked
+     */
+    @FXML
+    public void handleDestinationIPCheckBox() {
+        if (filterDestination.isSelected()) {
+            filterSource.setSelected(false);
+        }
+    }
+
+    /**
+     *
+     */
+    @FXML
+    public void handleTCPCheckBoxSelect() {
+        enablePortField();
+    }
+
+    /**
+     *
+     */
+    @FXML
+    public void handleUDPCheckBoxSelect() {
+        enablePortField();
+    }
+
+    /**
+     *
+     */
+    @FXML
+    public void handleICMPCheckBoxSelect() {
+        enablePortField();
+    }
+
+    /**
+     * Disables ports when only ARP protocol is selected
+     */
+    @FXML
+    public void handleARPCheckBoxSelect() {
+        enablePortField();
+    }
+
+    /**
+     *
+     */
+    private void clearFilterText() {
+        filterTCP.setSelected(false);
+        filterUDP.setSelected(false);
+        filterICMP.setSelected(false);
+        filterIP.clear();
+        filterPort.clear();
+        filterSource.setSelected(false);
+        filterDestination.setSelected(false);
+    }
+
+    /**
+     * Validates IP string input
+     * @param ip
+     * @return
+     */
+    private static boolean isIPValid(String ip) {
+        if(ip == null || ip.length() < 7 || ip.length() > 15) return false;
+
+        try {
+            int x = 0;
+            int y = ip.indexOf('.');
+
+            if (y == -1 || ip.charAt(x) == '-' || Integer.parseInt(ip.substring(x, y)) > 255) return false;
+
+            x = ip.indexOf('.', ++y);
+            if (x == -1 || ip.charAt(y) == '-' || Integer.parseInt(ip.substring(y, x)) > 255) return false;
+
+            y = ip.indexOf('.', ++x);
+            return  !(y == -1 ||
+                    ip.charAt(x) == '-' ||
+                    Integer.parseInt(ip.substring(x, y)) > 255 ||
+                    ip.charAt(++y) == '-' ||
+                    Integer.parseInt(ip.substring(y, ip.length())) > 255 ||
+                    ip.charAt(ip.length()-1) == '.');
+
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Helper function to enable port field if ARP is selected
+     */
+    private void enablePortField() {
+        if (filterARP.isSelected() &&
+                !filterTCP.isSelected() &&
+                !filterUDP.isSelected() &&
+                !filterICMP.isSelected()) {
+            filterPort.setDisable(true);
+            filterIP.setDisable(true);
+            filterSource.setDisable(true);
+            filterDestination.setDisable(true);
+        } else {
+            filterPort.setDisable(false);
+            filterIP.setDisable(false);
+            filterSource.setDisable(false);
+            filterDestination.setDisable(false);
+        }
+    }
+
+    /**
+     * Helper function -- disable all filter fields
+     */
+    private void disableAllFilterFields() {
+        filterTCP.setDisable(true);
+        filterUDP.setDisable(true);
+        filterICMP.setDisable(true);
+        filterARP.setDisable(true);
+        filterIP.setDisable(true);
+        filterPort.setDisable(true);
+        filterSource.setDisable(true);
+        filterDestination.setDisable(true);
+        filterApplyButton.setDisable(true);
+        filterClearButton.setDisable(true);
+    }
+
+    /**
+     * Helper function -- enable all filter fields
+     */
+    private void enableAllFilterFields() {
+        filterTCP.setDisable(false);
+        filterUDP.setDisable(false);
+        filterICMP.setDisable(false);
+        filterARP.setDisable(false);
+        filterIP.setDisable(false);
+        filterPort.setDisable(false);
+        filterSource.setDisable(false);
+        filterDestination.setDisable(false);
+        filterApplyButton.setDisable(false);
+        filterClearButton.setDisable(false);
     }
 }

@@ -1,16 +1,14 @@
 package sample;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import jpcap.packet.Packet;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static sample.PacketManager.getPacket;
 
 /**
  * Created by gregorypontejos on 4/2/17.
@@ -39,7 +37,7 @@ public class PacketViewerController implements Initializable {
         if (inPacket.getText() != null) {
             packetNum = Integer.parseInt(inPacket.getText());
             System.out.printf("Packet Entered: %s\n", inPacket.getText());
-            currentPacket = getPacket(packetNum);
+            setCurrentPacket();
             //System.out.printf("%s", currentPacket.toString());
             populatePacketInfo();
             populatePayloadRaw();
@@ -123,11 +121,19 @@ public class PacketViewerController implements Initializable {
     @FXML
     public void handleNextPacket() {
         inPacket.clear();
-        if ((packetNum + 1) < PacketManager.getCaptureSize()) {
-            packetNum++;
-            System.out.printf("Next Packet displayed: %d\n", packetNum);
+        if (PacketManager.isFilterApplied()) {
+            if ((packetNum + 1) < PacketManager.getFilteredCaptureSize()) {
+                packetNum++;
+                System.out.printf("Next Packet displayed: %d\n", packetNum);
+            }
+            currentPacket = PacketManager.getCurrentFilteredPacket(packetNum);
+        } else {
+            if ((packetNum + 1) < PacketManager.getCurrentCaptureSize()) {
+                packetNum++;
+                System.out.printf("Next Packet displayed: %d\n", packetNum);
+            }
+            currentPacket = PacketManager.getCurrentCapturePacket(packetNum);
         }
-        currentPacket = getPacket(packetNum);
         //System.out.printf("%s", currentPacket.toString());
         populatePacketInfo();
         populatePayloadRaw();
@@ -143,11 +149,23 @@ public class PacketViewerController implements Initializable {
         if ((packetNum - 1) >= 0) {
             packetNum--;
             System.out.printf("Next Packet displayed: %d\n", packetNum);
+            setCurrentPacket();
         }
-        currentPacket = getPacket(packetNum);
         //System.out.printf("%s", currentPacket.toString());
         populatePacketInfo();
         populatePayloadRaw();
         populatePayloadText();
+    }
+
+    /**
+     * Helper function
+     * Set current packet based on if filter is applied
+     */
+    private void setCurrentPacket() {
+        if (PacketManager.isFilterApplied()) {
+            currentPacket = PacketManager.getCurrentFilteredPacket(packetNum);
+        } else {
+            currentPacket = PacketManager.getCurrentCapturePacket(packetNum);
+        }
     }
 }
