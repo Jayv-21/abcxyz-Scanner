@@ -110,22 +110,22 @@
                                 <Label text="UDP" GridPane.rowIndex="1" />
                                 <Label text="ICMP" GridPane.rowIndex="2" />
                                 <Label text="ARP" GridPane.rowIndex="3" />
-                                <CheckBox fx:id="filterTCP" mnemonicParsing="false" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1">
+                                <CheckBox fx:id="filterTCP" mnemonicParsing="false" onAction="#handleTCPCheckBoxSelect" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
                                 </CheckBox>
-                                <CheckBox fx:id="filterUDP" mnemonicParsing="false" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <CheckBox fx:id="filterUDP" mnemonicParsing="false" onAction="#handleUDPCheckBoxSelect" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
                                 </CheckBox>
-                                <CheckBox fx:id="filterICMP" mnemonicParsing="false" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                <CheckBox fx:id="filterICMP" mnemonicParsing="false" onAction="#handleICMPCheckBoxSelect" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
                                 </CheckBox>
-                                <CheckBox fx:id="filterARP" mnemonicParsing="false" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                <CheckBox fx:id="filterARP" mnemonicParsing="false" onAction="#handleARPCheckBoxSelect" text="enable" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
@@ -146,16 +146,16 @@
                             <children>
                                 <Label text="IP" />
                                 <Label text="Port" GridPane.rowIndex="1" />
-                                <Label text="Source IP" GridPane.rowIndex="2" />
-                                <Label text="Destination IP" GridPane.rowIndex="3" />
+                                <Label text="Source" GridPane.rowIndex="2" />
+                                <Label text="Destination" GridPane.rowIndex="3" />
                                 <TextField fx:id="filterIP" GridPane.columnIndex="1" />
                                 <TextField fx:id="filterPort" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                <CheckBox fx:id="filterSourceIP" mnemonicParsing="false" onAction="#handleSourceIPCheckBox" onMouseClicked="#handleSourceIPCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                <CheckBox fx:id="filterSource" mnemonicParsing="false" onAction="#handleSourceIPCheckBox" onMouseClicked="#handleSourceIPCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
                                 </CheckBox>
-                                <CheckBox fx:id="filterDestinationIP" mnemonicParsing="false" onAction="#handleDestinationIPCheckBox" onMouseClicked="#handleDestinationIPCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                <CheckBox fx:id="filterDestination" mnemonicParsing="false" onAction="#handleDestinationIPCheckBox" onMouseClicked="#handleDestinationIPCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                     <font>
                                         <Font size="10.0" />
                                     </font>
@@ -168,8 +168,8 @@
                             </font>
                         </Label>
                         <Separator layoutX="8.0" layoutY="314.0" prefWidth="200.0" />
-                  <Button layoutX="32.0" layoutY="447.0" mnemonicParsing="false" onAction="#handleApplyProtocolFilters" text="Apply" />
-                  <Button layoutX="138.0" layoutY="447.0" mnemonicParsing="false" onAction="#handleClearProtocolFilters" text="Clear" />
+                  <Button fx:id="filterApplyButton" layoutX="32.0" layoutY="447.0" mnemonicParsing="false" onAction="#handleApplyProtocolFilters" text="Apply" />
+                  <Button fx:id="filterClearButton" layoutX="138.0" layoutY="447.0" mnemonicParsing="false" onAction="#handleClearProtocolFilters" text="Clear" />
                     </children>
                 </AnchorPane>
                 <ScrollPane prefHeight="-1.0" prefWidth="-1.0">
