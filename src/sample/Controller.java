@@ -16,11 +16,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import java.io.File;
+import javafx.stage.FileChooser;
 
 public class Controller implements Initializable {
 
     private NetworkInterfaceManager nInterfaces= new NetworkInterfaceManager();
     private PacketManager pManager= new PacketManager();
+
+    //private  Desktop desktop = Desktop.getDesktop();
+    //FileChooser fileChooser = new FileChooser();
 
     @FXML
     public ComboBox deviceList = new ComboBox<>();
@@ -29,6 +34,7 @@ public class Controller implements Initializable {
 
     private int captureStatus;
     private int lineCount = 0;
+    private JpcapCaptor jpcap = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -111,6 +117,7 @@ public class Controller implements Initializable {
             PacketManager.addPacket(tempPacket);
             printPacket(tempPacket);
         }
+        jpcap = captor;
         captor.close();
     }
 
@@ -150,6 +157,49 @@ public class Controller implements Initializable {
     public void handleClearStats() {
         PacketManager.clearStats();
     }
+
+    @FXML
+    public void handleSaveCapture(){
+        FileChooser saveFileChooser = new FileChooser();
+        configureFileChooser(saveFileChooser);
+        //Opens up a file to save the packet datat to
+        File file = saveFileChooser.showSaveDialog(null);
+        JpcapCaptor captor = jpcap;
+        /*try {
+            captor = JpcapCaptor.openDevice(NetworkInterfaceManager.getSelectedInterface(deviceList), 65535, true, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+        if(file != null)
+        {
+            String saveFileName = null;
+            saveFileName = file.getName();
+            System.out.println("A file was created and will be saved with the name of " + " " + saveFileName);
+            String consoleText = consoleOutput.getText();
+            PacketManager.saveCapture(captor, saveFileName, file, consoleText);
+        }
+
+    }
+
+    @FXML
+    public void handleOpenCapture(){
+        FileChooser openFileChooser = new FileChooser();
+        configureFileChooser(openFileChooser);
+        File file = openFileChooser.showOpenDialog(null);
+        if(file != null)
+        {
+            String openFileName = null;
+            openFileName = file.getName();
+            System.out.println("A file will be opened and the file being opened is  " + " " + openFileName);
+            PacketManager.openCapture(file);
+        }
+    }
+
+    public static void configureFileChooser(final FileChooser fileChooser){
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("tcpdump","*.pcap"),
+                new FileChooser.ExtensionFilter("Text Document", "*.txt"));
+    }
 }
+
 
 

@@ -4,8 +4,14 @@ import jpcap.JpcapCaptor;
 import jpcap.NetworkInterface;
 import jpcap.packet.*;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import jpcap.JpcapWriter;
+import java.io.File;
+
 /**
  * Created by gregorypontejos on 3/12/17.
  */
@@ -45,8 +51,59 @@ public class PacketManager {
         currentCapture = new ArrayList<>();
     }
 
-    void saveCapture() {
+    /**
+     *
+     * @param captor
+     * @param content
+     * @param file
+     * @param consoleText
+     * I commented out the parts that were causing my JVM to crash.
+     * I think when i try to open the dumpfile it causes the JVM to crash.
+     * Right now the data in the textArea is saved into a file as a string, but the individual packets are not saved.
+     */
+    static void saveCapture(JpcapCaptor captor, String content, File file, String consoleText) {
+        //JpcapWriter writer = null;
+        FileWriter fileWriter = null;
+        BufferedWriter output  = null;
+        System.out.println("The filename is  " + "" + content);
+        /*try {
+            writer = JpcapWriter.openDumpFile(captor,content);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for(int i = 0; i < 10; i++)
+        {
+            Packet packet = captor.getPacket();
+            writer.writePacket(packet);
+        }
+        writer.close();*/
+        try {
+            fileWriter = new FileWriter(file);
+            output = new BufferedWriter(fileWriter);
+            output.write(consoleText);
+            output.newLine();
+            try {
+                output.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    /**
+     *
+     * @param file
+     */
+    static void openCapture(File file)
+    {
+        System.out.println("The file will be opened!");
     }
 
     /**
