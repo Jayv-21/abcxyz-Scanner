@@ -2,6 +2,7 @@ package sample;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import jpcap.packet.Packet;
@@ -24,9 +25,13 @@ public class PacketViewerController implements Initializable {
     public TextArea payloadRaw = new TextArea();
     public TextArea payloadText = new TextArea();
     public TextField inPacket = new TextField();
+    public Button followStreamButton = new Button();
+    public Button previousPacketButton = new Button();
+    public Button nextPacketButton = new Button();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        disableAllButtons();
     }
 
     /**
@@ -34,14 +39,18 @@ public class PacketViewerController implements Initializable {
      */
     @FXML
     public void handleViewPacket() {
-        if (inPacket.getText() != null) {
+        if (!inPacket.getText().trim().isEmpty()) {
             packetNum = Integer.parseInt(inPacket.getText());
             System.out.printf("Packet Entered: %s\n", inPacket.getText());
-            setCurrentPacket();
-            //System.out.printf("%s", currentPacket.toString());
-            populatePacketInfo();
-            populatePayloadRaw();
-            populatePayloadText();
+            if (setCurrentPacket()) {
+                //System.out.printf("%s", currentPacket.toString());
+                populatePacketInfo();
+                populatePayloadRaw();
+                populatePayloadText();
+                enableAllButtons();
+            } else {
+                inPacket.clear();
+            }
         } else {
             inPacket.clear();
         }
@@ -161,11 +170,40 @@ public class PacketViewerController implements Initializable {
      * Helper function
      * Set current packet based on if filter is applied
      */
-    private void setCurrentPacket() {
+    private boolean setCurrentPacket() {
         if (PacketManager.isFilterApplied()) {
-            currentPacket = PacketManager.getCurrentFilteredPacket(packetNum);
+            if (packetNum < PacketManager.getFilteredCaptureSize() &&
+                    packetNum >= 0 &&
+                    PacketManager.getFilteredCaptureSize() > 0) {
+                currentPacket = PacketManager.getCurrentFilteredPacket(packetNum);
+                return true;
+            }
         } else {
-            currentPacket = PacketManager.getCurrentCapturePacket(packetNum);
+            if (packetNum < PacketManager.getCurrentCaptureSize() &&
+                    packetNum >= 0 &&
+                    PacketManager.getCurrentCaptureSize() > 0) {
+                currentPacket = PacketManager.getCurrentCapturePacket(packetNum);
+                return true;
+            }
         }
+        return false;
+    }
+
+    /**
+     * Disables all buttons, except for 'View Packet'
+     */
+    private void disableAllButtons() {
+        followStreamButton.setDisable(true);
+        nextPacketButton.setDisable(true);
+        previousPacketButton.setDisable(true);
+    }
+
+    /**
+     * Enables all buttons, except for 'View Packet'
+     */
+    private void enableAllButtons() {
+        followStreamButton.setDisable(false);
+        nextPacketButton.setDisable(false);
+        previousPacketButton.setDisable(false);
     }
 }

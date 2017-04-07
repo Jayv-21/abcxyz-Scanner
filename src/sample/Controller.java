@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 
 
 public class Controller implements Initializable {
-
+    // Static classes to manage interfaces and packets
     private NetworkInterfaceManager nInterfaces= new NetworkInterfaceManager();
     private PacketManager pManager= new PacketManager();
 
@@ -58,7 +58,7 @@ public class Controller implements Initializable {
     private int filterApplied = 0;
 
     /**
-     *
+     * Initialize GUI and get current network interfaces
      * @param location
      * @param resources
      */
@@ -66,10 +66,11 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         deviceList.setItems(NetworkInterfaceManager.activeInterfaces());
         disableAllFilterFields();
+        consoleOutput.setEditable(false);
     }
 
     /**
-     *
+     * Force shutdown application
      */
     @FXML
     void closeApp() {
@@ -78,7 +79,7 @@ public class Controller implements Initializable {
     }
 
     /**
-     *
+     * Displays About Us modal
      */
     @FXML
     void handleAbout() {
@@ -92,14 +93,17 @@ public class Controller implements Initializable {
 
         aboutPopup.setResizable(false);
         aboutPopup.setTitle("About");
-        aboutPopup.setScene(new Scene(root, 382,144));
+        Scene nScene = new Scene(root, 382,144);
+        nScene.getStylesheets().clear();
+        nScene.getStylesheets().add("theme.css");
+        aboutPopup.setScene(nScene);
         aboutPopup.show();
 
         System.out.printf("Display 'About Scanner' Popup\n");
     }
 
     /**
-     *
+     * Opens new modal to display attributes of all attached network interfaces
      * @throws IOException
      */
     @FXML
@@ -108,13 +112,16 @@ public class Controller implements Initializable {
         Stage interfacePopUp = new Stage();
         interfacePopUp.setResizable(false);
         interfacePopUp.setTitle("Network Interface Information");
-        interfacePopUp.setScene(new Scene(pane, 600,400));
+        Scene nScene = new Scene(pane, 600,400);
+        nScene.getStylesheets().clear();
+        nScene.getStylesheets().add("theme.css");
+        interfacePopUp.setScene(nScene);
         interfacePopUp.show();
         System.out.print("Interface List PopUp Launched\n");
     }
 
     /**
-     *
+     * Starts a new capture if an active interface is selected
      * @throws IOException
      */
     @FXML
@@ -256,7 +263,10 @@ public class Controller implements Initializable {
         Stage payloadPopUp = new Stage();
         payloadPopUp.setResizable(false);
         payloadPopUp.setTitle("Packet/Payload Information");
-        payloadPopUp.setScene(new Scene(root, 700,500));
+        Scene nScene = new Scene(root, 700,500);
+        nScene.getStylesheets().clear();
+        nScene.getStylesheets().add("theme.css");
+        payloadPopUp.setScene(nScene);
         payloadPopUp.show();
         System.out.print("View Payload PopUp Launched\n");
     }

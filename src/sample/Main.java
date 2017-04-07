@@ -13,7 +13,10 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         primaryStage.setResizable(false);
         primaryStage.setTitle("Scanner");
-        primaryStage.setScene(new Scene(root, 900, 600));
+        Scene nScene = new Scene(root, 900, 600);
+        nScene.getStylesheets().clear();
+        nScene.getStylesheets().add("theme.css");
+        primaryStage.setScene(nScene);
         primaryStage.show();
     }
 

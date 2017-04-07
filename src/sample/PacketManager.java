@@ -167,7 +167,7 @@ public class PacketManager implements Serializable {
 
         if (packet instanceof IPPacket) {
             if (((IPPacket) packet).protocol == ICMP_IPV6) {
-                t = formatPacketICMP((ICMPPacket) packet);
+                t = formatPacketICMPV6((IPPacket) packet);
                 return t;
             } else if (((IPPacket) packet).protocol == ICMP) {
                 t = formatPacketICMP((ICMPPacket) packet);
@@ -220,7 +220,7 @@ public class PacketManager implements Serializable {
         StringBuilder f = new StringBuilder(1024);
 
         // Line 1 - Packet
-        f.append("Packet Type: ICMP");
+        f.append("Packet Type: ICMPv4");
 
         // Line 2 - IP
         f.append("\nSource IP: ");
@@ -231,6 +231,26 @@ public class PacketManager implements Serializable {
         // Line 3 - Info
         f.append("\nType: ").append(codeMessageICMP(packet.code));
         f.append("\nSequence Number: ").append(packet.seq);
+
+        return f.toString();
+    }
+
+    /**
+     *
+     * @param packet
+     * @return
+     */
+    static String formatPacketICMPV6(IPPacket packet){
+        StringBuilder f = new StringBuilder(1024);
+
+        // Line 1 - Packet
+        f.append("Packet Type: ICMPv6");
+
+        // Line 2 - IP
+        f.append("\nSource IP: ");
+        f.append(packet.src_ip.getHostAddress());
+        f.append(" --> Destination IP: ");
+        f.append(packet.dst_ip.getHostAddress());
 
         return f.toString();
     }
@@ -406,31 +426,20 @@ public class PacketManager implements Serializable {
             // Protocol packet filters
             if (packet instanceof IPPacket) {
                 if (filterICMP) {
-                    if (((IPPacket) packet).protocol != ICMP_IPV6) {
-                        continue;
-                    } else if (!(((IPPacket) packet).protocol != ICMP)) {
-                        continue;
-                    }
+                    if (((IPPacket) packet).protocol != ICMP_IPV6 &&
+                        (((IPPacket) packet).protocol != ICMP)) { continue; }
                 }
                 if (filterTCP) {
-                    if (((IPPacket) packet).protocol != TCP) {
-                        continue;
-                    }
+                    if (((IPPacket) packet).protocol != TCP) { continue; }
                 }
                 if (filterUDP) {
-                    if (((IPPacket) packet).protocol != UDP) {
-                       continue;
-                    }
+                    if (((IPPacket) packet).protocol != UDP) { continue; }
                 }
                 if (filterIGMP)
-                if (((IPPacket) packet).protocol != IGMP) {
-                    continue;
-                }
+                if (((IPPacket) packet).protocol != IGMP) { continue; }
             }
             if (filterARP) {
-                if (!(packet instanceof ARPPacket)) {
-                    continue;
-                }
+                if (!(packet instanceof ARPPacket)) { continue; }
             }
 
             // IP and Port filters
