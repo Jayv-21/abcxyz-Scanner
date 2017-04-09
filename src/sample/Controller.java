@@ -95,7 +95,7 @@ public class Controller implements Initializable {
         aboutPopup.setTitle("About");
         Scene nScene = new Scene(root, 382,144);
         nScene.getStylesheets().clear();
-        nScene.getStylesheets().add("theme.css");
+        //nScene.getStylesheets().add("theme.css");
         aboutPopup.setScene(nScene);
         aboutPopup.show();
 
@@ -265,7 +265,7 @@ public class Controller implements Initializable {
         payloadPopUp.setTitle("Packet/Payload Information");
         Scene nScene = new Scene(root, 700,500);
         nScene.getStylesheets().clear();
-        nScene.getStylesheets().add("theme.css");
+        //nScene.getStylesheets().add("theme.css");
         payloadPopUp.setScene(nScene);
         payloadPopUp.show();
         System.out.print("View Payload PopUp Launched\n");
