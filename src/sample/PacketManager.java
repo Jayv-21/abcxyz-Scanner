@@ -528,29 +528,30 @@ public class PacketManager implements Serializable {
      * @return True if current packet is a match
      */
     private static boolean filterProtocolCheck(Packet packet) {
-        if (packet instanceof IPPacket && !(packet instanceof ARPPacket)) {
+        if (!(packet instanceof ARPPacket)) {
             if (filterICMP) {
-                if (((IPPacket) packet).protocol != ICMP_IPV6 &&
-                        (((IPPacket) packet).protocol != ICMP)) { return false; }
-            }
-            if (filterTCP) {
-                if (((IPPacket) packet).protocol != TCP) { return false; }
-            }
-            if (filterUDP) {
-                if (((IPPacket) packet).protocol != UDP) { return false; }
-            }
-            if (filterIGMP) {
-                if (((IPPacket) packet).protocol != IGMP) {
-                    return false;
+                if (((IPPacket) packet).protocol == ICMP_IPV6 ||
+                        (((IPPacket) packet).protocol == ICMP) ||
+                        ((IPPacket) packet).protocol == IGMP) {
+                    return true;
                 }
             }
-            return true;
+            if (filterTCP) {
+                if (((IPPacket) packet).protocol == TCP) {
+                    return true;
+                }
+            }
+            if (filterUDP) {
+                if (((IPPacket) packet).protocol == UDP) {
+                    return true;
+                }
+            }
+        }
+        if (filterARP) {
+            if (packet instanceof ARPPacket) { return true; }
         }
 
-        if (filterARP) {
-            if (packet instanceof IPPacket) { return false; }
-        }
-        return true;
+        return false;
     }
 
     /**
