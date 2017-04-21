@@ -1,3 +1,12 @@
+/**
+ * This file is part of the CS 4398 Software Engineering Project, Spring 2017 class -- Group 2
+ * Group Members
+ * @author Gregory Pontejos
+ * @author Donovan Wells
+ * @author Jason Villegas
+ * @author Kingsley Nyaosi
+ */
+
 package sample;
 
 import javafx.fxml.FXML;
@@ -5,8 +14,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import jpcap.packet.Packet;
+import jpcap.packet.*;
 
+import java.net.InetAddress;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -24,10 +34,18 @@ public class PacketViewerController implements Initializable {
     public TextArea packetInfo = new TextArea();
     public TextArea payloadRaw = new TextArea();
     public TextArea payloadText = new TextArea();
+    public TextArea followStreamText = new TextArea();
     public TextField inPacket = new TextField();
     public Button followStreamButton = new Button();
     public Button previousPacketButton = new Button();
     public Button nextPacketButton = new Button();
+
+    // Protocols used
+    private static int ICMP = 1;
+    private static int IGMP = 2;
+    private static int TCP = 6;
+    private static int UDP = 17;
+    private static int ICMP_IPV6 = 58;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -54,6 +72,8 @@ public class PacketViewerController implements Initializable {
         } else {
             inPacket.clear();
         }
+
+        disableIfARP();
     }
 
     /**
@@ -68,6 +88,7 @@ public class PacketViewerController implements Initializable {
         packetInfo.appendText(PacketManager.formatPacketInfo(currentPacket));
         packetInfo.appendText("\n");
         packetInfo.setEditable(false);
+        disableIfARP();
     }
 
     /**
@@ -82,7 +103,13 @@ public class PacketViewerController implements Initializable {
 
         for (int i = 0; i < currentPacket.data.length; i = i + 16){
             tmp = 0;
-            f.append(String.format("%04X\t", i));
+
+            if (i == 272) {
+                f.append(String.format("%04X\t\t", i));
+            } else {
+                f.append(String.format("%04X\t", i));
+            }
+
             while(tmp < 16 && ((i + tmp) < currentPacket.data.length)) {
                 f.append(String.format("%02X", currentPacket.data[i + tmp]));
                 f.append("\t");
@@ -107,7 +134,13 @@ public class PacketViewerController implements Initializable {
 
         for (int i = 0; i < currentPacket.data.length; i = i + 16){
             tmp = 0;
-            f.append(String.format("%04X\t", i));
+
+            if (i == 272) {
+                f.append(String.format("%04X\t\t", i));
+            } else {
+                f.append(String.format("%04X\t", i));
+            }
+
             while(tmp < 16 && ((i + tmp) < currentPacket.data.length)) {
                 if (currentPacket.data[i + tmp] < 33 ||
                         currentPacket.data[i + tmp] > 126) {
@@ -130,6 +163,10 @@ public class PacketViewerController implements Initializable {
     @FXML
     public void handleNextPacket() {
         inPacket.clear();
+        followStreamText.setEditable(true);
+        followStreamText.clear();
+        followStreamText.setEditable(false);
+
         if (PacketManager.isFilterApplied()) {
             if ((packetNum + 1) < PacketManager.getFilteredCaptureSize()) {
                 packetNum++;
@@ -147,6 +184,7 @@ public class PacketViewerController implements Initializable {
         populatePacketInfo();
         populatePayloadRaw();
         populatePayloadText();
+        disableIfARP();
     }
 
     /**
@@ -155,6 +193,8 @@ public class PacketViewerController implements Initializable {
     @FXML
     public void handlePreviousPacket() {
         inPacket.clear();
+        followStreamText.clear();
+
         if ((packetNum - 1) >= 0) {
             packetNum--;
             System.out.printf("Next Packet displayed: %d\n", packetNum);
@@ -164,6 +204,136 @@ public class PacketViewerController implements Initializable {
         populatePacketInfo();
         populatePayloadRaw();
         populatePayloadText();
+        disableIfARP();
+    }
+
+    /**
+     *
+     */
+    @FXML
+    public void handleFollowStream() {
+        // Set protocol and IP to search
+        InetAddress sIP = ((IPPacket) currentPacket).src_ip;
+        InetAddress dIP = ((IPPacket) currentPacket).dst_ip;
+        int protocol = ((IPPacket)currentPacket).protocol;
+        int sPort = 0;
+        int dPort = 0;
+
+        StringBuilder f = new StringBuilder();
+        followStreamText.setEditable(true);
+        followStreamText.clear();
+
+        // Set ports to search
+        // ICMP and IGMP uses the same port, so ports are not needed.
+        if (currentPacket instanceof TCPPacket) {
+            sPort = ((TCPPacket) currentPacket).src_port;
+            dPort = ((TCPPacket) currentPacket).dst_port;
+        } else if (currentPacket instanceof UDPPacket) {
+            sPort = ((UDPPacket) currentPacket).src_port;
+            dPort = ((UDPPacket) currentPacket).dst_port;
+        }
+
+        System.out.printf("Ports to be matched for FollowStream\n");
+        System.out.printf("Source IP: %s\n", sIP.toString());
+        System.out.printf("Destination IP: %s\n", dIP.toString());
+        System.out.printf("Source port: %d\n", sPort);
+        System.out.printf("Destination port: %d\n", dPort);
+
+        // Search through current capture for packets -- No filters applied
+        if (!PacketManager.isFilterApplied()) {
+            for (int i = 0; i < PacketManager.getCurrentCaptureSize(); i++) {
+                Packet tPacket = PacketManager.getCurrentCapturePacket(i);
+
+                System.out.printf("In loop -- Iteration %d\n", i);
+
+                if (tPacket instanceof TCPPacket ||
+                        tPacket instanceof UDPPacket) {
+                    // Protocol check
+                    if (((IPPacket) tPacket).protocol != protocol) {
+                        System.out.printf("Protocol Fail\n");
+                        continue;
+                    }
+
+                    // Port check
+                    if (protocol == UDP) {
+                        if (sPort != ((UDPPacket) tPacket).src_port &&
+                                dPort != ((UDPPacket) tPacket).dst_port) {
+                            System.out.printf("Port Fail\n");
+                            continue;
+                        }
+                    }
+                    if (protocol == TCP) {
+                        if (sPort != ((TCPPacket) tPacket).src_port &&
+                                dPort != ((TCPPacket) tPacket).dst_port) {
+                            System.out.printf("Port Fail\n");
+                            continue;
+                        }
+                    }
+
+                    // IP check
+                    if (!sIP.equals(((IPPacket) tPacket).src_ip) &&
+                            !dIP.equals(((IPPacket) tPacket).dst_ip)) {
+                        System.out.printf("IP Fail\n");
+                        continue;
+                    }
+
+                    // Add payload to Follow Stream text area
+                    for (int j = 0; j < tPacket.data.length - 1; j++) {
+                        if (tPacket.data[j] <= 126 && tPacket.data[j] >= 32 ||
+                                tPacket.data[j] == 10) {
+                            f.append((char) tPacket.data[j]);
+                        }
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < PacketManager.getFilteredCaptureSize(); i++) {
+                Packet tPacket = PacketManager.getCurrentFilteredPacket(i);
+
+                System.out.printf("In loop -- Iteration %d\n", i);
+
+                if (tPacket instanceof TCPPacket ||
+                        tPacket instanceof UDPPacket) {
+                    // Protocol check
+                    if (((IPPacket) tPacket).protocol != protocol) {
+                        System.out.printf("Protocol Fail\n");
+                        continue;
+                    }
+
+                    // Port check
+                    if (protocol == UDP) {
+                        if (sPort != ((UDPPacket) tPacket).src_port &&
+                                dPort != ((UDPPacket) tPacket).dst_port) {
+                            System.out.printf("Port Fail\n");
+                            continue;
+                        }
+                    }
+                    if (protocol == TCP) {
+                        if (sPort != ((TCPPacket) tPacket).src_port &&
+                                dPort != ((TCPPacket) tPacket).dst_port) {
+                            System.out.printf("Port Fail\n");
+                            continue;
+                        }
+                    }
+
+                    // IP check
+                    if (!sIP.equals(((IPPacket) tPacket).src_ip) &&
+                            !dIP.equals(((IPPacket) tPacket).dst_ip)) {
+                        System.out.printf("IP Fail\n");
+                        continue;
+                    }
+
+                    // Add payload to Follow Stream text area
+                    for (int j = 0; j < tPacket.data.length - 1; j++) {
+                        if (tPacket.data[j] <= 126 && tPacket.data[j] >= 32 ||
+                                tPacket.data[j] == 10) {
+                            f.append((char) tPacket.data[j]);
+                        }
+                    }
+                }
+            }
+        }
+        followStreamText.appendText(f.toString());
     }
 
     /**
@@ -205,5 +375,14 @@ public class PacketViewerController implements Initializable {
         followStreamButton.setDisable(false);
         nextPacketButton.setDisable(false);
         previousPacketButton.setDisable(false);
+    }
+
+    /**
+     * Disable FollowStream button if ARP Packet
+     */
+    private void disableIfARP() {
+        if (currentPacket instanceof TCPPacket || currentPacket instanceof UDPPacket) {
+            followStreamButton.setDisable(false);
+        } else followStreamButton.setDisable(true);
     }
 }

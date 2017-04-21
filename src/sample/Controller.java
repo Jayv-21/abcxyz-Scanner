@@ -1,4 +1,14 @@
+/**
+ * This file is part of the CS 4398 Software Engineering Project, Spring 2017 class -- Group 2
+ * Group Members
+ * @author Gregory Pontejos
+ * @author Donovan Wells
+ * @author Jason Villegas
+ * @author Kingsley Nyaosi
+ */
+
 package sample;
+
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,6 +38,7 @@ public class Controller implements Initializable {
     @FXML
     public ComboBox deviceList = new ComboBox<>();
     public TextArea consoleOutput = new TextArea();
+    public CheckBox promiscuousModeButton = new CheckBox();
 
     //Filter objects
     @FXML
@@ -50,9 +61,9 @@ public class Controller implements Initializable {
     public TextField ICMPStat = new TextField();
     public TextField ARPStat = new TextField();
 
-
-    private int captureStatus;
+    //private int captureStatus;
     private int lineCount = 0;
+    private Thread t;
 
     // 0 if filters are not applied, 1 if filters are applied
     private int filterApplied = 0;
@@ -95,7 +106,7 @@ public class Controller implements Initializable {
         aboutPopup.setTitle("About");
         Scene nScene = new Scene(root, 382,144);
         nScene.getStylesheets().clear();
-        //nScene.getStylesheets().add("theme.css");
+        nScene.getStylesheets().add("theme.css");
         aboutPopup.setScene(nScene);
         aboutPopup.show();
 
@@ -127,6 +138,7 @@ public class Controller implements Initializable {
     @FXML
     public void startCapture() throws IOException {
         PacketManager.newCapture();
+        disableAllFilterFields();
 
         // Prevents capture from starting if an interface is not selected
         if (deviceList.getSelectionModel().getSelectedIndex() != -1) {
@@ -148,29 +160,43 @@ public class Controller implements Initializable {
      *
      */
     private void capturePackets() {
-        Packet tempPacket;
-        captureStatus = 0;
-
-        JpcapCaptor captor = null;
-
-        // Open the selected network interface to begin a capture
-        try {
-            captor = JpcapCaptor.openDevice(NetworkInterfaceManager.getSelectedInterface(deviceList), 65535, false, 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.printf("Network Interface opened\n");
+        //captureStatus = 0;
 
         // Capture packets until stopCapture is called
-        while (captureStatus == 0) {
-            assert captor != null;
-            tempPacket = captor.getPacket();
-            PacketManager.addPacket(tempPacket);
-            printPacket(tempPacket);
+        t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Packet tempPacket;
+                JpcapCaptor captor = null;
 
-        }
-        captor.close();
+                // Open the selected network interface to begin a capture
+                try {
+                    captor = JpcapCaptor.openDevice(NetworkInterfaceManager.getSelectedInterface(deviceList),
+                            65535, promiscuousModeButton.isSelected(), 20);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                System.out.printf("Network Interface opened\n");
+                while(!Thread.currentThread().isInterrupted()) {
+                    try {
+                        assert captor != null;
+                        tempPacket = captor.getPacket();
+                        PacketManager.addPacket(tempPacket);
+                        Controller.this.printPacket(tempPacket);
+                        if (Thread.interrupted()) {
+                            throw new InterruptedException();
+                        }
+                    } catch(InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+
+                captor.close();
+            }
+        });
+        t.start();
+
     }
 
     /**
@@ -224,11 +250,13 @@ public class Controller implements Initializable {
      */
     @FXML
     public void stopCapture() {
-        captureStatus = 1;
+        // captureStatus = 1;
+        t.interrupt();
         consoleOutput.setEditable(false);
         System.out.printf("Capture ended.\n");
         if (PacketManager.getCurrentCaptureSize() > 0) {
             enableAllFilterFields();
+            checkEmptyStats();
         }
     }
 
@@ -245,12 +273,18 @@ public class Controller implements Initializable {
         disableAllFilterFields();
     }
 
-    /**
-     *
-     */
     @FXML
-    public void handleClearStats() {
-        PacketManager.clearStats();
+    public void handleViewConversations() throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("conversations.fxml"));
+        Stage conversationPopUp = new Stage();
+        conversationPopUp.setResizable(false);
+        conversationPopUp.setTitle("Conversations");
+        Scene nScene = new Scene(root, 482,277);
+        nScene.getStylesheets().clear();
+        nScene.getStylesheets().add("theme.css");
+        conversationPopUp.setScene(nScene);
+        conversationPopUp.show();
+        System.out.print("View Conversations PopUp Launched\n");
     }
 
     /**
@@ -263,9 +297,9 @@ public class Controller implements Initializable {
         Stage payloadPopUp = new Stage();
         payloadPopUp.setResizable(false);
         payloadPopUp.setTitle("Packet/Payload Information");
-        Scene nScene = new Scene(root, 700,500);
+        Scene nScene = new Scene(root, 987,500);
         nScene.getStylesheets().clear();
-        //nScene.getStylesheets().add("theme.css");
+        nScene.getStylesheets().add("theme.css");
         payloadPopUp.setScene(nScene);
         payloadPopUp.show();
         System.out.print("View Payload PopUp Launched\n");
@@ -279,34 +313,38 @@ public class Controller implements Initializable {
         filterApplied = 1;
 
         // Set filters
-        if (!filterIP.getText().isEmpty() &&
-                isIPValid(filterIP.getText())) {
-                PacketManager.setIPAddressFilter(InetAddress.getByName(filterIP.getText()));
-        }
-        if (!filterPort.getText().isEmpty()) {
-            PacketManager.setSourcePort(Integer.parseInt(filterPort.getText()),
-                    filterSource.isSelected(),
-                    filterDestination.isSelected());
-        }
-        PacketManager.setProtocolFilters(filterTCP.isSelected(),
-                filterUDP.isSelected(),
-                filterICMP.isSelected(),
-                filterARP.isSelected());
-        PacketManager.populateFilteredPackets();
+        if (!checkEmptyFilters()) {
+            if (!filterIP.getText().trim().isEmpty() &&
+                    isIPValid(filterIP.getText())) {
+                PacketManager.setIPAddressFilter(InetAddress.getByName(filterIP.getText().trim()),
+                        filterSource.isSelected(),
+                        filterDestination.isSelected());
+            }
+            if (!filterPort.getText().isEmpty()) {
+                PacketManager.setSourcePort(Integer.parseInt(filterPort.getText()),
+                        filterSource.isSelected(),
+                        filterDestination.isSelected());
+            }
+            PacketManager.setProtocolFilters(filterTCP.isSelected(),
+                    filterUDP.isSelected(),
+                    filterICMP.isSelected(),
+                    filterARP.isSelected());
+            PacketManager.populateFilteredPackets();
 
-        // Print packets to console
-        consoleOutput.setEditable(true);
-        consoleOutput.clear();
+            // Print packets to console
+            consoleOutput.setEditable(true);
+            consoleOutput.clear();
 
-        for (int i = 0; i < PacketManager.getFilteredCaptureSize(); i++) {
-            consoleOutput.appendText("Packet Number: ");
-            consoleOutput.appendText(Integer.toString(i));
-            consoleOutput.appendText("\n");
-            consoleOutput.appendText(PacketManager.formatPacketInfo(PacketManager.getCurrentFilteredPacket(i)));
-            consoleOutput.appendText("\n\n");
-            lineCount++;
+            for (int i = 0; i < PacketManager.getFilteredCaptureSize(); i++) {
+                consoleOutput.appendText("Packet Number: ");
+                consoleOutput.appendText(Integer.toString(i));
+                consoleOutput.appendText("\n");
+                consoleOutput.appendText(PacketManager.formatPacketInfo(PacketManager.getCurrentFilteredPacket(i)));
+                consoleOutput.appendText("\n\n");
+                lineCount++;
+            }
+            consoleOutput.setEditable(false);
         }
-        consoleOutput.setEditable(false);
     }
 
     /**
@@ -354,6 +392,10 @@ public class Controller implements Initializable {
      */
     @FXML
     public void handleTCPCheckBoxSelect() {
+        if (filterUDP.isSelected()) filterUDP.setSelected(false);
+        if (filterICMP.isSelected()) filterICMP.setSelected(false);
+        if (filterARP.isSelected()) filterARP.setSelected(false);
+
         enablePortField();
     }
 
@@ -362,6 +404,10 @@ public class Controller implements Initializable {
      */
     @FXML
     public void handleUDPCheckBoxSelect() {
+        if (filterTCP.isSelected()) filterTCP.setSelected(false);
+        if (filterICMP.isSelected()) filterICMP.setSelected(false);
+        if (filterARP.isSelected()) filterARP.setSelected(false);
+
         enablePortField();
     }
 
@@ -370,6 +416,10 @@ public class Controller implements Initializable {
      */
     @FXML
     public void handleICMPCheckBoxSelect() {
+        if (filterTCP.isSelected()) filterTCP.setSelected(false);
+        if (filterUDP.isSelected()) filterUDP.setSelected(false);
+        if (filterARP.isSelected()) filterARP.setSelected(false);
+
         enablePortField();
     }
 
@@ -378,16 +428,21 @@ public class Controller implements Initializable {
      */
     @FXML
     public void handleARPCheckBoxSelect() {
+        if (filterTCP.isSelected()) filterTCP.setSelected(false);
+        if (filterUDP.isSelected()) filterUDP.setSelected(false);
+        if (filterICMP.isSelected()) filterICMP.setSelected(false);
+
         enablePortField();
     }
 
     /**
-     *
+     * Helpter function -- clears all filter fields
      */
     private void clearFilterText() {
         filterTCP.setSelected(false);
         filterUDP.setSelected(false);
         filterICMP.setSelected(false);
+        filterARP.setSelected(false);
         filterIP.clear();
         filterPort.clear();
         filterSource.setSelected(false);
@@ -396,8 +451,8 @@ public class Controller implements Initializable {
 
     /**
      * Validates IP string input
-     * @param ip
-     * @return
+     * @param ip IP user input string to be validated
+     * @return True if the IP is of the correct format
      */
     private static boolean isIPValid(String ip) {
         if(ip == null || ip.length() < 7 || ip.length() > 15) return false;
@@ -474,5 +529,27 @@ public class Controller implements Initializable {
         filterDestination.setDisable(false);
         filterApplyButton.setDisable(false);
         filterClearButton.setDisable(false);
+    }
+
+    /**
+     * Helper function -- disable filter field if no packets of that protocol were captured
+     */
+    private void checkEmptyStats() {
+        if (PacketManager.getTotalARP() == 0) { filterARP.setDisable(true); }
+        if (PacketManager.getTotalICMP() == 0) { filterICMP.setDisable(true); }
+        if (PacketManager.getTotalTCP() == 0) { filterTCP.setDisable(true); }
+        if (PacketManager.getTotalUDP() == 0) { filterUDP.setDisable(true); }
+    }
+
+    /**
+     * Helper function - check if there are any filters are populated
+     */
+    private boolean checkEmptyFilters() {
+        return !(filterTCP.isSelected() ||
+                filterUDP.isSelected() ||
+                filterICMP.isSelected() ||
+                filterARP.isSelected() ||
+                filterIP.getText().isEmpty() ||
+                filterPort.getText().isEmpty());
     }
 }

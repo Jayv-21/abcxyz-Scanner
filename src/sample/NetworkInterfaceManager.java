@@ -1,3 +1,12 @@
+/**
+ * This file is part of the CS 4398 Software Engineering Project, Spring 2017 class -- Group 2
+ * Group Members
+ * @author Gregory Pontejos
+ * @author Donovan Wells
+ * @author Jason Villegas
+ * @author Kingsley Nyaosi
+ */
+
 package sample;
 
 import javafx.collections.FXCollections;

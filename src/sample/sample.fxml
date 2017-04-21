@@ -49,6 +49,7 @@
             <Menu mnemonicParsing="false" text="View">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#handleViewPayload" text="Packet Viewer" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleViewConversations" text="Conversations" />
               </items>
             </Menu>
                 <Menu mnemonicParsing="false" text="Help">
@@ -227,7 +228,7 @@
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             </columnConstraints>
                         </GridPane>
-                        <CheckBox layoutX="40.0" layoutY="501.0" mnemonicParsing="false" text="Promiscuous mode" />
+                        <CheckBox fx:id="promiscuousModeButton" layoutX="40.0" layoutY="501.0" mnemonicParsing="false" text="Promiscuous mode" />
                     </children>
                 </AnchorPane>
             </items>

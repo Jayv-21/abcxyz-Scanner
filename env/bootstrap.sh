@@ -18,6 +18,7 @@ sudo apt-get install -y libswt-gtk-3-java
 sudo apt-get install -y libxslt1.1
 sudo apt-get install -y libxtst6
 sudo apt-get install -y libxxf86vm1
+sudo apt-get install -y xfce4
 
 #Create user
 #sudo useradd -m -p dev dev

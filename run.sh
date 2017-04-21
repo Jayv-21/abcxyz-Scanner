@@ -1,2 +1,6 @@
 #!/bin/bash
-java -cp ./src/ sample.Main
+
+cd ./src/
+make
+cd ../env/
+java -jar Scanner.jar
