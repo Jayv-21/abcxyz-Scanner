@@ -7,6 +7,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import jpcap.packet.Packet;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -28,6 +29,9 @@ public class PacketViewerController implements Initializable {
     public Button followStreamButton = new Button();
     public Button previousPacketButton = new Button();
     public Button nextPacketButton = new Button();
+
+    public PacketViewerController() throws IOException {
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

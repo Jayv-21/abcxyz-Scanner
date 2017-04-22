@@ -1,7 +1,9 @@
 package sample;
 
+import jpcap.JpcapCaptor;
 import jpcap.packet.*;
-import java.io.Serializable;
+
+import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -45,7 +47,7 @@ public class PacketManager implements Serializable {
     /**
      * Default Constructor
      */
-    PacketManager() {
+    PacketManager() throws IOException {
     }
 
     /**
@@ -601,5 +603,43 @@ public class PacketManager implements Serializable {
         filterPort = -1;
         filterIsSourceSelected = false;
         filterIsDestinationSelected = false;
+    }
+
+    public static void saveCapture(File file) {
+        try {
+            FileOutputStream fileOut = new FileOutputStream(file);
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            for(int i = 0; i < currentCapture.size(); i++)
+                out.writeObject(currentCapture.get(i));
+            out.close();
+            fileOut.close();
+            System.out.printf("Done.");
+        }catch(IOException i) {
+            i.printStackTrace();
+        }
+    }
+
+    public static void openCapture(File file){
+        try {
+            FileInputStream fileIn = new FileInputStream(file);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            Packet inPacket = (Packet) in.readObject();
+            System.out.println("Start open read");
+            while(inPacket != null) {
+                addPacket(inPacket);
+                System.out.println(inPacket);
+                inPacket = (Packet) in.readObject();
+            }
+            in.close();
+            fileIn.close();
+        } catch(EOFException i){
+            return;
+        } catch(IOException i) {
+            i.printStackTrace();
+            return;
+        } catch(ClassNotFoundException c) {
+            c.printStackTrace();
+            return;
+        }
     }
 }
