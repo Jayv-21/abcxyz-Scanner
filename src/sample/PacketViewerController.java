@@ -17,6 +17,7 @@ import javafx.scene.control.TextField;
 import jpcap.packet.*;
 
 import java.net.InetAddress;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -46,6 +47,8 @@ public class PacketViewerController implements Initializable {
     private static int TCP = 6;
     private static int UDP = 17;
     private static int ICMP_IPV6 = 58;
+    public PacketViewerController() throws IOException {
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

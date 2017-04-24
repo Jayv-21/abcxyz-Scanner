@@ -18,10 +18,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jpcap.JpcapCaptor;
+import jpcap.JpcapWriter;
 import jpcap.packet.Packet;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
@@ -69,6 +72,9 @@ public class Controller implements Initializable {
 
     // 0 if filters are not applied, 1 if filters are applied
     private int filterApplied = 0;
+
+    public Controller() throws IOException {
+    }
 
     /**
      * Initialize GUI and get current network interfaces
@@ -151,7 +157,11 @@ public class Controller implements Initializable {
             t = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    Controller.this.capturePackets();
+                    try {
+                        Controller.this.capturePackets();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
             t.start();
@@ -163,9 +173,8 @@ public class Controller implements Initializable {
     /**
      *
      */
-    private void capturePackets() {
-        //captureStatus = 0;
 
+  private void capturePackets() throws IOException {
         Packet tempPacket;
         JpcapCaptor captor = null;
 
@@ -193,6 +202,9 @@ public class Controller implements Initializable {
                 Thread.currentThread().interrupt();
             }
         }
+        System.out.println("\n\n" + PacketManager.getCurrentCapturePacket(2));
+        captor.close();
+        System.out.println("\n\n" + PacketManager.getCurrentCapturePacket(2));
     }
 
     /**
@@ -479,6 +491,9 @@ public class Controller implements Initializable {
         }
     }
 
+
+
+
     /**
      * Helper function to enable port field if ARP is selected
      */
@@ -531,6 +546,7 @@ public class Controller implements Initializable {
         filterClearButton.setDisable(false);
     }
 
+
     /**
      * Helper function -- disable filter field if no packets of that protocol were captured
      */
@@ -551,5 +567,51 @@ public class Controller implements Initializable {
                 filterARP.isSelected() ||
                 filterIP.getText().isEmpty() ||
                 filterPort.getText().isEmpty());
+=======
+    @FXML
+    public void handleSaveCapture(){
+        FileChooser saveFileChooser = new FileChooser();
+        configureFileChooser(saveFileChooser);
+        //Opens up a file to save the packet datat to
+        File file = saveFileChooser.showSaveDialog(null);
+
+            String saveFileName = file.getName();
+            //saveFileName = file.getName();
+            System.out.println("A file was created and will be saved with the name of " + " " + saveFileName);
+            //String consoleText = consoleOutput.getText();
+            PacketManager.saveCapture(file);
+    }
+
+    @FXML
+    public void handleOpenCapture(){
+        // make sure currentCapture is clear before opening a capture from file.
+        try {
+            clearCapture();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
+        resetStats();
+
+
+        FileChooser fileChooser = new FileChooser();
+        configureFileChooser(fileChooser);
+
+        File file = fileChooser.showOpenDialog(null);
+        String FileName = file.getName();
+        System.out.println("A file will be opened with the name of " + " " + FileName);
+        PacketManager.openCapture(file);
+
+        for(int i =0; i < pManager.getCurrentCaptureSize(); i++) {
+            printPacket(pManager.getCurrentCapturePacket(i));
+        }
+        stopCapture();
+    }
+
+    public static void configureFileChooser(final FileChooser fileChooser){
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("tcpdump","*.pcap"),
+                new FileChooser.ExtensionFilter("Text Document", "*.txt"));
+
     }
 }
+
