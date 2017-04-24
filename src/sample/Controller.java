@@ -567,7 +567,8 @@ public class Controller implements Initializable {
                 filterARP.isSelected() ||
                 filterIP.getText().isEmpty() ||
                 filterPort.getText().isEmpty());
-=======
+    }
+
     @FXML
     public void handleSaveCapture(){
         FileChooser saveFileChooser = new FileChooser();
