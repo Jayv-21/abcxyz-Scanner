@@ -49,6 +49,7 @@
             <Menu mnemonicParsing="false" text="View">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#handleViewPayload" text="Packet Viewer" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleViewConversations" text="Conversations" />
               </items>
             </Menu>
                 <Menu mnemonicParsing="false" text="Help">
@@ -217,9 +218,9 @@
                             </children>
                         </GridPane>
                         <Separator layoutX="10.0" layoutY="35.0" prefWidth="200.0" />
-                        <Button layoutX="34.0" layoutY="377.0" mnemonicParsing="false" onAction="#clearCapture" prefHeight="17.0" prefWidth="154.0" text="Clear" />
+                        <Button fx:id="clearCaptureButton" layoutX="34.0" layoutY="377.0" mnemonicParsing="false" onAction="#clearCapture" prefHeight="17.0" prefWidth="154.0" text="Clear" />
                         <Button layoutX="34.0" layoutY="419.0" mnemonicParsing="false" onAction="#stopCapture" prefHeight="17.0" prefWidth="154.0" text="Stop" />
-                        <Button layoutX="34.0" layoutY="461.0" mnemonicParsing="false" onAction="#startCapture" prefHeight="17.0" prefWidth="154.0" text="Start" />
+                        <Button fx:id="startCaptureButton" layoutX="34.0" layoutY="461.0" mnemonicParsing="false" onAction="#startCapture" prefHeight="17.0" prefWidth="154.0" text="Start" />
                         <Button layoutX="81.0" layoutY="217.0" mnemonicParsing="false" onAction="#resetStats" text="Reset" />
                         <GridPane layoutX="10.0" layoutY="377.0">
                             <columnConstraints>
@@ -227,7 +228,7 @@
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             </columnConstraints>
                         </GridPane>
-                        <CheckBox layoutX="40.0" layoutY="501.0" mnemonicParsing="false" text="Promiscuous mode" />
+                        <CheckBox fx:id="promiscuousModeButton" layoutX="40.0" layoutY="501.0" mnemonicParsing="false" text="Promiscuous mode" />
                     </children>
                 </AnchorPane>
             </items>

@@ -1,3 +1,12 @@
+/**
+ * This file is part of the CS 4398 Software Engineering Project, Spring 2017 class -- Group 2
+ * Group Members
+ * @author Gregory Pontejos
+ * @author Donovan Wells
+ * @author Jason Villegas
+ * @author Kingsley Nyaosi
+ */
+
 package sample;
 
 import javafx.application.Application;
@@ -14,7 +23,7 @@ public class Main extends Application {
         primaryStage.setTitle("Scanner");
         Scene nScene = new Scene(root, 900, 600);
         nScene.getStylesheets().clear();
-        //nScene.getStylesheets().add("theme.css");
+        nScene.getStylesheets().add("theme.css");
         primaryStage.setScene(nScene);
         primaryStage.show();
     }
