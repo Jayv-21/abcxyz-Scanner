@@ -18,7 +18,7 @@ import java.util.ArrayList;
 /**
  *
  */
-public class PacketManager implements Serializable {
+class PacketManager implements Serializable {
 
     private static ArrayList<Packet> currentCapture = new ArrayList<>();
     private static ArrayList<Packet> filteredCapture;
@@ -93,6 +93,7 @@ public class PacketManager implements Serializable {
         System.out.printf("Total ICMP: %s\n", totalICMP);
         System.out.printf("Total ARP: %s\n", totalARP);
         System.out.printf("Total IP: %s\n", totalIP);
+        System.out.printf("Ready to start new capture\n");
 
         newCapture();
         clearStats();
@@ -560,24 +561,27 @@ public class PacketManager implements Serializable {
      * @return True if the current packet is a match
      */
     private static boolean filterIPCheck(Packet packet) {
+        if (!(packet instanceof TCPPacket) && !(packet instanceof UDPPacket)) { return false; }
+
 
         if (!filterIsDestinationSelected &&
                 !filterIsSourceSelected) {
             // ARP packets do not reference ports
             if (filterPort > 0) {
                 if (packet instanceof TCPPacket) {
-                    if (((TCPPacket) packet).src_port != filterPort ||
+                    if (((TCPPacket) packet).src_port != filterPort &&
                             ((TCPPacket) packet).dst_port != filterPort) {
                         return false;
                     }
                 }
                 if (packet instanceof UDPPacket) {
-                    if (((UDPPacket) packet).src_port != filterPort ||
+                    if (((UDPPacket) packet).src_port != filterPort &&
                             ((UDPPacket) packet).dst_port != filterPort) {
                         return false;
                     }
                 }
             }
+
 
             // IP filter
             if (filterIP != null) {
@@ -659,7 +663,6 @@ public class PacketManager implements Serializable {
         conversations = new ArrayList<>();
 
         for (int i = 0; i < getCurrentCaptureSize(); i++) {
-            System.out.printf("Populating conversations, iteration %d\n", i);
             packet = getCurrentCapturePacket(i);
             if (packet instanceof TCPPacket || packet instanceof UDPPacket) {
                 sAddr = ((IPPacket)packet).src_ip;

@@ -39,6 +39,8 @@ public class Controller implements Initializable {
     public ComboBox deviceList = new ComboBox<>();
     public TextArea consoleOutput = new TextArea();
     public CheckBox promiscuousModeButton = new CheckBox();
+    public Button clearCaptureButton = new Button();
+    public Button startCaptureButton = new Button();
 
     //Filter objects
     @FXML
@@ -139,10 +141,12 @@ public class Controller implements Initializable {
     public void startCapture() throws IOException {
         PacketManager.newCapture();
         disableAllFilterFields();
+        startCaptureButton.setDisable(true);
+        clearCaptureButton.setDisable(true);
+        promiscuousModeButton.setDisable(true);
 
         // Prevents capture from starting if an interface is not selected
         if (deviceList.getSelectionModel().getSelectedIndex() != -1) {
-            Thread t;
             consoleOutput.setEditable(true);
             t = new Thread(new Runnable() {
                 @Override
@@ -162,41 +166,33 @@ public class Controller implements Initializable {
     private void capturePackets() {
         //captureStatus = 0;
 
-        // Capture packets until stopCapture is called
-        t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Packet tempPacket;
-                JpcapCaptor captor = null;
+        Packet tempPacket;
+        JpcapCaptor captor = null;
 
-                // Open the selected network interface to begin a capture
-                try {
-                    captor = JpcapCaptor.openDevice(NetworkInterfaceManager.getSelectedInterface(deviceList),
-                            65535, promiscuousModeButton.isSelected(), 20);
-                } catch (IOException e) {
-                    e.printStackTrace();
+        // Open the selected network interface to begin a capture
+        try {
+            captor = JpcapCaptor.openDevice(NetworkInterfaceManager.getSelectedInterface(deviceList),
+                    65535, promiscuousModeButton.isSelected(), 20);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.printf("Network Interface opened\n");
+        while(!Thread.currentThread().isInterrupted()) {
+            try {
+                assert captor != null;
+                tempPacket = captor.getPacket();
+                if (tempPacket != null && tempPacket.toString().length() > 20) {
+                    PacketManager.addPacket(tempPacket);
+                    Controller.this.printPacket(tempPacket);
                 }
-
-                System.out.printf("Network Interface opened\n");
-                while(!Thread.currentThread().isInterrupted()) {
-                    try {
-                        assert captor != null;
-                        tempPacket = captor.getPacket();
-                        PacketManager.addPacket(tempPacket);
-                        Controller.this.printPacket(tempPacket);
-                        if (Thread.interrupted()) {
-                            throw new InterruptedException();
-                        }
-                    } catch(InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
+                if (Thread.interrupted()) {
+                    throw new InterruptedException();
                 }
-
-                captor.close();
+            } catch(InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
-        });
-        t.start();
-
+        }
     }
 
     /**
@@ -252,12 +248,16 @@ public class Controller implements Initializable {
     public void stopCapture() {
         // captureStatus = 1;
         t.interrupt();
+
         consoleOutput.setEditable(false);
         System.out.printf("Capture ended.\n");
         if (PacketManager.getCurrentCaptureSize() > 0) {
             enableAllFilterFields();
             checkEmptyStats();
         }
+        clearCaptureButton.setDisable(false);
+        startCaptureButton.setDisable(false);
+        promiscuousModeButton.setDisable(false);
     }
 
     /**
@@ -279,7 +279,7 @@ public class Controller implements Initializable {
         Stage conversationPopUp = new Stage();
         conversationPopUp.setResizable(false);
         conversationPopUp.setTitle("Conversations");
-        Scene nScene = new Scene(root, 482,277);
+        Scene nScene = new Scene(root, 596,336);
         nScene.getStylesheets().clear();
         nScene.getStylesheets().add("theme.css");
         conversationPopUp.setScene(nScene);
@@ -321,7 +321,7 @@ public class Controller implements Initializable {
                         filterDestination.isSelected());
             }
             if (!filterPort.getText().isEmpty()) {
-                PacketManager.setSourcePort(Integer.parseInt(filterPort.getText()),
+                PacketManager.setSourcePort(Integer.parseInt(filterPort.getText().trim()),
                         filterSource.isSelected(),
                         filterDestination.isSelected());
             }
