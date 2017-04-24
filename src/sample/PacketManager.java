@@ -752,7 +752,8 @@ class PacketManager implements Serializable {
      */
     public static ArrayList getConversation(int n) {
         return conversations.get(n);
-=======
+    }
+
     public static void saveCapture(File file) {
         try {
             FileOutputStream fileOut = new FileOutputStream(file);

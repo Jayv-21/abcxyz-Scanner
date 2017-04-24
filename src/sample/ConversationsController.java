@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
 
 public class ConversationsController implements Initializable{
 
-    private PacketManager pManager= new PacketManager();
+    //private PacketManager pManager= new PacketManager();
 
     @FXML
     public TextArea consoleOutput = new TextArea();
