@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="987.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.PacketViewerController">
+   <children>
+      <SplitPane dividerPositions="0.3092369477911647" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="500.0" prefWidth="700.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+               <children>
+                  <TextArea fx:id="packetInfo" layoutY="26.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="125.0" prefWidth="480.0">
+                     <font>
+                        <Font size="12.0" />
+                     </font></TextArea>
+                  <Label layoutX="489.0" layoutY="15.0" prefHeight="17.0" prefWidth="145.0" text="Enter Packet Number: " />
+                  <TextField fx:id="inPacket" layoutX="637.0" layoutY="13.0" prefHeight="27.0" prefWidth="43.0" />
+                  <Button layoutX="543.0" layoutY="48.0" mnemonicParsing="false" onAction="#handleViewPacket" text="View Packet" />
+                  <Button fx:id="nextPacketButton" layoutX="635.0" layoutY="116.0" mnemonicParsing="false" onAction="#handleNextPacket" text="Next" />
+                  <Button fx:id="previousPacketButton" layoutX="489.0" layoutY="116.0" mnemonicParsing="false" onAction="#handlePreviousPacket" text="Previous" />
+                  <Label layoutX="182.0" layoutY="6.0" text="Packet Information" textAlignment="CENTER" underline="true" />
+                  <Button fx:id="followStreamButton" layoutX="538.0" layoutY="82.0" mnemonicParsing="false" onAction="#handleFollowStream" text="Follow Stream" />
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+               <children>
+                  <TextArea fx:id="payloadRaw" layoutY="38.0" prefHeight="304.0" prefWidth="496.0">
+                     <font>
+                        <Font size="11.0" />
+                     </font></TextArea>
+                  <TextArea fx:id="payloadText" layoutX="508.0" layoutY="38.0" prefHeight="304.0" prefWidth="190.0">
+                     <font>
+                        <Font size="11.0" />
+                     </font></TextArea>
+                  <Label layoutX="193.0" layoutY="14.0" text="Raw Payload Data" underline="true" />
+                  <Label layoutX="563.0" layoutY="14.0" text="Payload Text" textAlignment="CENTER" underline="true" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+      <Label layoutX="822.0" layoutY="6.0" text="Stream" textAlignment="CENTER" underline="true" />
+      <TextArea fx:id="followStreamText" layoutX="711.0" layoutY="25.0" prefHeight="475.0" prefWidth="265.0" wrapText="true">
+         <font>
+            <Font size="10.0" />
+         </font></TextArea>
+   </children>
+</AnchorPane>

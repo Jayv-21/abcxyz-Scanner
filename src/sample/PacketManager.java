@@ -9,7 +9,6 @@
 
 package sample;
 
-import jpcap.JpcapCaptor;
 import jpcap.packet.*;
 
 import java.io.*;
@@ -65,10 +64,6 @@ class PacketManager implements Serializable {
      */
     static void newCapture() {
         currentCapture = new ArrayList<>();
-    }
-
-    void saveCapture() {
-
     }
 
     /**
@@ -418,7 +413,7 @@ class PacketManager implements Serializable {
      * Get total capture size
      * @return Total size of the current capture
      */
-    public static int getCurrentCaptureSize(){
+    static int getCurrentCaptureSize(){
         return currentCapture.size();
     }
 
@@ -426,13 +421,13 @@ class PacketManager implements Serializable {
      * Get total size of filtered capture
      * @return Total size of the filtered capture
      */
-    public static int getFilteredCaptureSize() { return filteredCapture.size(); }
+    static int getFilteredCaptureSize() { return filteredCapture.size(); }
 
     /**
      * Populate an ArrayList containing Filtered Packets
      * @return Filtered packet ArrayList to be displayed
      */
-    public static ArrayList<Packet> populateFilteredPackets() {
+    static void populateFilteredPackets() {
         filteredCapture = new ArrayList<>();
         Packet packet;
 
@@ -457,8 +452,6 @@ class PacketManager implements Serializable {
             }
             filteredCapture.add(packet);
         }
-
-        return filteredCapture;
     }
 
     /**
@@ -468,7 +461,7 @@ class PacketManager implements Serializable {
      * @param icmp True if filtering ICMP Packets
      * @param arp True if filtering ARP Packets
      */
-    public static void setProtocolFilters(boolean tcp, boolean udp, boolean icmp, boolean arp) {
+    static void setProtocolFilters(boolean tcp, boolean udp, boolean icmp, boolean arp) {
         filterApplied = true;
         filterTCP = tcp;
         filterUDP = udp;
@@ -482,7 +475,7 @@ class PacketManager implements Serializable {
      * @param isSource True if IP is the source
      * @param isDestination True if IP is the destination
      */
-    public static void setIPAddressFilter(InetAddress ip, boolean isSource, boolean isDestination) {
+    static void setIPAddressFilter(InetAddress ip, boolean isSource, boolean isDestination) {
         filterApplied = true;
         filterIP = ip;
         filterIsSourceSelected = isSource;
@@ -495,7 +488,7 @@ class PacketManager implements Serializable {
      * @param isSource True if Port is the source
      * @param isDestination True if Port is the destination
      */
-    public static void setSourcePort(int port, boolean isSource, boolean isDestination) {
+    static void setSourcePort(int port, boolean isSource, boolean isDestination) {
         filterApplied = true;
         filterPort = port;
         filterIsSourceSelected = isSource;
@@ -506,14 +499,14 @@ class PacketManager implements Serializable {
      * Check if a filter is applied
      * @return True if filter is currently applied
      */
-    public static boolean isFilterApplied() {
+    static boolean isFilterApplied() {
         return filterApplied;
     }
 
     /**
      * Reset status to reflect that there are no filters applied
      */
-    public static void clearFilters() throws UnknownHostException {
+    static void clearFilters() throws UnknownHostException {
         filterApplied = false;
         filterIP = null;
         filterTCP = false;
@@ -530,7 +523,7 @@ class PacketManager implements Serializable {
      * @param packet Packet to check
      * @return True if current packet is a match
      */
-    private static boolean filterProtocolCheck(Packet packet) {
+    static boolean filterProtocolCheck(Packet packet) {
         if (!(packet instanceof ARPPacket)) {
             if (filterICMP) {
                 if (((IPPacket) packet).protocol == ICMP_IPV6 ||
@@ -562,7 +555,7 @@ class PacketManager implements Serializable {
      * @param packet Packet to check
      * @return True if the current packet is a match
      */
-    private static boolean filterIPCheck(Packet packet) {
+    static boolean filterIPCheck(Packet packet) {
         if (!(packet instanceof TCPPacket) && !(packet instanceof UDPPacket)) { return false; }
 
 
@@ -655,7 +648,7 @@ class PacketManager implements Serializable {
      * where the first element is always the source, and the remaining elements
      * are destinations from that source.
      */
-    public static void populateConverations() {
+    static void populateConversations() {
         Packet packet;
         InetAddress sAddr;
         InetAddress dAddr;
@@ -741,7 +734,7 @@ class PacketManager implements Serializable {
      * Gets the total number of IP sources
      * @return Size of conversation array list
      */
-    public static int getConversationsSize() {
+    static int getConversationsSize() {
         return conversations.size();
     }
 

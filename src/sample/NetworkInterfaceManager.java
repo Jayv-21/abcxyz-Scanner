@@ -17,10 +17,7 @@ import jpcap.NetworkInterface;
 
 import java.util.ArrayList;
 
-/**
- * Created by gregorypontejos on 3/11/17.
- */
-public class NetworkInterfaceManager {
+class NetworkInterfaceManager {
 
     private static NetworkInterface [] devices;
     private static ArrayList<String> netInterface;
@@ -32,7 +29,7 @@ public class NetworkInterfaceManager {
     /**
      *
      */
-    public static void refreshInterfaces() {
+    static void refreshInterfaces() {
         netInterface = new ArrayList<>();
         devices = JpcapCaptor.getDeviceList();
         System.out.printf("Devices added: ");
@@ -47,7 +44,7 @@ public class NetworkInterfaceManager {
      *
      * @return
      */
-    public static ObservableList<String> activeInterfaces() {
+    static ObservableList<String> activeInterfaces() {
         return FXCollections.observableArrayList(netInterface);
     }
 
@@ -56,7 +53,7 @@ public class NetworkInterfaceManager {
      * @param deviceList
      * @return
      */
-    public static NetworkInterface getSelectedInterface (ComboBox deviceList) {
+    static NetworkInterface getSelectedInterface (ComboBox deviceList) {
         int r = deviceList.getSelectionModel().getSelectedIndex();
 
         System.out.printf("Device selected: %s\n", r);
@@ -68,7 +65,7 @@ public class NetworkInterfaceManager {
      *
      * @return
      */
-    public static NetworkInterface [] getInterfaceList() {
+    static NetworkInterface [] getInterfaceList() {
         return devices;
     }
 
