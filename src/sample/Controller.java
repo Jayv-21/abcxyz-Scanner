@@ -21,7 +21,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jpcap.JpcapCaptor;
-import jpcap.JpcapWriter;
 import jpcap.packet.Packet;
 
 import java.io.File;

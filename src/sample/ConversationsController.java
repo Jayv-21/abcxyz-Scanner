@@ -25,7 +25,7 @@ public class ConversationsController implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        PacketManager.populateConverations();
+        PacketManager.populateConversations();
         populateConversationOutput();
     }
 
