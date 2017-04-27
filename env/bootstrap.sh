@@ -44,3 +44,5 @@ cp ~/Jpcap-master/lib/jpcap.jar  /usr/share/java/
 export CLASSPATH=$CLASSPATH:/usr/share/java/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/
 source ~/.bashrc
+
+sudo startxfce4&
