@@ -12,10 +12,12 @@ Libpcap is the c library used to capture packets. Libpcap can be downloaded by v
     
     Homebrew can be downloaded by running the following command in terminal
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    
+    If the jpcap.jar file is nonfunctional, then you will need to add the jar file
+    located in abcxyz-Scanner/env/Jpcap-master/lib.jpcap.jar
+
 To compile and run this program, simply run the following command in terminal from the project directory
     ./run.sh
 
 Note: 
-    Heavy network traffic may slow down or crash the program. The packets will be processed, but the processing
-    may take longer. 
+    Heavy network traffic may slow down or crash the program. The packets will be 
+    processed, but the processing may take longer. 

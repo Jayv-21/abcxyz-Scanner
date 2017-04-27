@@ -274,6 +274,7 @@ public class Controller implements Initializable {
         clearCaptureButton.setDisable(false);
         startCaptureButton.setDisable(false);
         promiscuousModeButton.setDisable(false);
+        enableAllFilterFields();
     }
 
     /**
@@ -390,6 +391,7 @@ public class Controller implements Initializable {
         }
 
         consoleOutput.setEditable(false);
+        enableAllFilterFields();
     }
     /**
      * Verifies destination IP box is not checked
@@ -624,7 +626,7 @@ public class Controller implements Initializable {
         for(int i =0; i < pManager.getCurrentCaptureSize(); i++) {
             printPacket(pManager.getCurrentCapturePacket(i));
         }
-        stopCapture();
+        enableAllFilterFields();
     }
 
     /**
