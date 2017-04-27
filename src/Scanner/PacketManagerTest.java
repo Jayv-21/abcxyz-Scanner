@@ -16,11 +16,14 @@ import org.junit.jupiter.api.Test;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import static Scanner.PacketManager.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static sample.PacketManager.*;
 
+/**
+ * Tests all packet related functions in Packet Manager
+ */
 class PacketManagerTest {
 
     // Protocols used

@@ -15,6 +15,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * Entry point for Scanner application
+ */
 public class Main extends Application {
 
     /**

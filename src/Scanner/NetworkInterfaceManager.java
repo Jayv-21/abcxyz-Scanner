@@ -18,7 +18,7 @@ import jpcap.NetworkInterface;
 import java.util.ArrayList;
 
 /**
- * All network interfaces are
+ * Manages all wired and wireless network interfaces for Scanner
  */
 class NetworkInterfaceManager {
 

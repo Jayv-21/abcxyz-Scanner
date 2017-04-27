@@ -18,6 +18,9 @@ import jpcap.NetworkInterfaceAddress;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Manages display of network interfaces
+ */
 public class InterfaceInfoController implements Initializable {
 
    private NetworkInterfaceManager nInterface = new NetworkInterfaceManager();
