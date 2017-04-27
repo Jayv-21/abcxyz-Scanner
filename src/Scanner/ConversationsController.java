@@ -7,7 +7,7 @@
  * @author Kingsley Nyaosi
  */
 
-package sample;
+package Scanner;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,6 +29,11 @@ public class ConversationsController implements Initializable{
     @FXML
     public TextArea consoleOutput = new TextArea();
 
+    /**
+     * Initializes conversations and populates console output
+     * @param location location of resource
+     * @param resources Resource bundle
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         PacketManager.populateConversations();

@@ -1,8 +1,8 @@
 JCC=javac
 FLAGS=-d
 DEST=.
-SOURCE=./sample/*.java
-S2=./sample/
+SOURCE=./Scanner/*.java
+S2=./Scanner/
 
 all:
 	$(JCC) $(FLAGS) $(DEST) $(SOURCE)
@@ -10,4 +10,4 @@ all:
 	mv ./Scanner.jar ../env/Scanner.jar
 
 clean:
-	rm $(DEST)sample/*.class
+	rm $(DEST)Scanner/*.class

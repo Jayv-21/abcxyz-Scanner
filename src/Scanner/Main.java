@@ -7,7 +7,7 @@
  * @author Kingsley Nyaosi
  */
 
-package sample;
+package Scanner;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

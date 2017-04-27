@@ -7,7 +7,7 @@
  * @author Kingsley Nyaosi
  */
 
-package sample;
+package Scanner;
 
 import jpcap.packet.*;
 
@@ -399,7 +399,7 @@ class PacketManager implements Serializable {
      * @param n Packet to be retrieved from current capture
      * @return Packet from current capture
      */
-    public static Packet getCurrentCapturePacket(int n) {
+    static Packet getCurrentCapturePacket(int n) {
         return currentCapture.get(n);
     }
 
@@ -408,7 +408,7 @@ class PacketManager implements Serializable {
      * @param n Packet to be retrieved from current filter capture
      * @return Packet from current filter capture
      */
-    public static Packet getCurrentFilteredPacket(int n) { return filteredCapture.get(n); }
+    static Packet getCurrentFilteredPacket(int n) { return filteredCapture.get(n); }
 
     /**
      * Get total capture size

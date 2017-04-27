@@ -7,7 +7,7 @@
  * @author Kingsley Nyaosi
  */
 
-package sample;
+package Scanner;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -33,7 +33,7 @@ import java.util.ResourceBundle;
 /**
  * This class is the main controller for the program. All functionality
  * is initiated from this modal. All new functionality will originate from
- * this interface. 
+ * this interface.
  */
 public class Controller implements Initializable {
     // Static classes to manage interfaces and packets

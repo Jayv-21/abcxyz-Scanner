@@ -7,7 +7,7 @@
  * @author Kingsley Nyaosi
  */
 
-package sample;
+package Scanner;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

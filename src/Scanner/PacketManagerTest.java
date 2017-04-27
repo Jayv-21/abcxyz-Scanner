@@ -1,4 +1,4 @@
-package sample;
+package Scanner;
 
 /**
  * This file is part of the CS 4398 Software Engineering Project, Spring 2017 class -- Group 2
@@ -78,6 +78,7 @@ class PacketManagerTest {
     /*
     The following tests are for the addPacket function
      */
+
 
     @Test
     void addTCPPacketTest() {
