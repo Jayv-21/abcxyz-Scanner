@@ -23,7 +23,10 @@ import java.util.ResourceBundle;
 
 
 /**
- * Created by gregorypontejos on 4/2/17.
+ * This class allows the user to view raw packet data, the ASCII output of the packet
+ * data, and follow the conversation stream of either TCP or UDP packets. The packets viewed
+ * in this modal can either be from the current or filtered capture, which will be dependent
+ * on the filter flag set in the PacketManager
  */
 public class PacketViewerController implements Initializable {
 
@@ -64,7 +67,6 @@ public class PacketViewerController implements Initializable {
             packetNum = Integer.parseInt(inPacket.getText());
             System.out.printf("Packet Entered: %s\n", inPacket.getText());
             if (setCurrentPacket()) {
-                //System.out.printf("%s", currentPacket.toString());
                 populatePacketInfo();
                 populatePayloadRaw();
                 populatePayloadText();
@@ -80,7 +82,8 @@ public class PacketViewerController implements Initializable {
     }
 
     /**
-     * Displays packet information in text field
+     * Displays general packet information in text field. This is the same information
+     * displayed in the Main Controller about any specified packet.
      */
     private void populatePacketInfo() {
         packetInfo.setEditable(true);
@@ -95,7 +98,8 @@ public class PacketViewerController implements Initializable {
     }
 
     /**
-     *
+     * Populates the text field with the raw data from a packet in the form of
+     * Hex bytes
      */
     private void populatePayloadRaw() {
         StringBuilder f = new StringBuilder(2048);
@@ -126,7 +130,8 @@ public class PacketViewerController implements Initializable {
     }
 
     /**
-     *
+     * This populates the text field with the full packet payload in the form of
+     * a stream of ASCII values
      */
     private void populatePayloadText() {
         StringBuilder f = new StringBuilder(2048);
@@ -161,7 +166,8 @@ public class PacketViewerController implements Initializable {
     }
 
     /**
-     *
+     * Repopulates all text fields with the next packet in the selected capture, if
+     * the next packet exists.
      */
     @FXML
     public void handleNextPacket() {
@@ -183,7 +189,6 @@ public class PacketViewerController implements Initializable {
             }
             currentPacket = PacketManager.getCurrentCapturePacket(packetNum);
         }
-        //System.out.printf("%s", currentPacket.toString());
         populatePacketInfo();
         populatePayloadRaw();
         populatePayloadText();
@@ -191,7 +196,8 @@ public class PacketViewerController implements Initializable {
     }
 
     /**
-     *
+     * Repopulates all text fields with the previou packet in the selected capture, if
+     * the previous packet exists.
      */
     @FXML
     public void handlePreviousPacket() {
@@ -203,7 +209,6 @@ public class PacketViewerController implements Initializable {
             System.out.printf("Next Packet displayed: %d\n", packetNum);
             setCurrentPacket();
         }
-        //System.out.printf("%s", currentPacket.toString());
         populatePacketInfo();
         populatePayloadRaw();
         populatePayloadText();
@@ -211,7 +216,8 @@ public class PacketViewerController implements Initializable {
     }
 
     /**
-     *
+     * Concatenates all packets from the selected packet's converation and displays the payload information
+     * sequentially in a Text Field
      */
     @FXML
     public void handleFollowStream() {
@@ -236,24 +242,15 @@ public class PacketViewerController implements Initializable {
             dPort = ((UDPPacket) currentPacket).dst_port;
         }
 
-        System.out.printf("Ports to be matched for FollowStream\n");
-        System.out.printf("Source IP: %s\n", sIP.toString());
-        System.out.printf("Destination IP: %s\n", dIP.toString());
-        System.out.printf("Source port: %d\n", sPort);
-        System.out.printf("Destination port: %d\n", dPort);
-
         // Search through current capture for packets -- No filters applied
         if (!PacketManager.isFilterApplied()) {
             for (int i = 0; i < PacketManager.getCurrentCaptureSize(); i++) {
                 Packet tPacket = PacketManager.getCurrentCapturePacket(i);
 
-                System.out.printf("In loop -- Iteration %d\n", i);
-
                 if (tPacket instanceof TCPPacket ||
                         tPacket instanceof UDPPacket) {
                     // Protocol check
                     if (((IPPacket) tPacket).protocol != protocol) {
-                        System.out.printf("Protocol Fail\n");
                         continue;
                     }
 
@@ -261,14 +258,12 @@ public class PacketViewerController implements Initializable {
                     if (protocol == UDP) {
                         if (sPort != ((UDPPacket) tPacket).src_port &&
                                 dPort != ((UDPPacket) tPacket).dst_port) {
-                            System.out.printf("Port Fail\n");
                             continue;
                         }
                     }
                     if (protocol == TCP) {
                         if (sPort != ((TCPPacket) tPacket).src_port &&
                                 dPort != ((TCPPacket) tPacket).dst_port) {
-                            System.out.printf("Port Fail\n");
                             continue;
                         }
                     }
@@ -276,7 +271,6 @@ public class PacketViewerController implements Initializable {
                     // IP check
                     if (!sIP.equals(((IPPacket) tPacket).src_ip) &&
                             !dIP.equals(((IPPacket) tPacket).dst_ip)) {
-                        System.out.printf("IP Fail\n");
                         continue;
                     }
 
@@ -293,13 +287,10 @@ public class PacketViewerController implements Initializable {
             for (int i = 0; i < PacketManager.getFilteredCaptureSize(); i++) {
                 Packet tPacket = PacketManager.getCurrentFilteredPacket(i);
 
-                System.out.printf("In loop -- Iteration %d\n", i);
-
                 if (tPacket instanceof TCPPacket ||
                         tPacket instanceof UDPPacket) {
                     // Protocol check
                     if (((IPPacket) tPacket).protocol != protocol) {
-                        System.out.printf("Protocol Fail\n");
                         continue;
                     }
 
@@ -307,14 +298,12 @@ public class PacketViewerController implements Initializable {
                     if (protocol == UDP) {
                         if (sPort != ((UDPPacket) tPacket).src_port &&
                                 dPort != ((UDPPacket) tPacket).dst_port) {
-                            System.out.printf("Port Fail\n");
                             continue;
                         }
                     }
                     if (protocol == TCP) {
                         if (sPort != ((TCPPacket) tPacket).src_port &&
                                 dPort != ((TCPPacket) tPacket).dst_port) {
-                            System.out.printf("Port Fail\n");
                             continue;
                         }
                     }
@@ -322,7 +311,6 @@ public class PacketViewerController implements Initializable {
                     // IP check
                     if (!sIP.equals(((IPPacket) tPacket).src_ip) &&
                             !dIP.equals(((IPPacket) tPacket).dst_ip)) {
-                        System.out.printf("IP Fail\n");
                         continue;
                     }
 

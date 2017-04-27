@@ -30,7 +30,11 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 
-
+/**
+ * This class is the main controller for the program. All functionality
+ * is initiated from this modal. All new functionality will originate from
+ * this interface. 
+ */
 public class Controller implements Initializable {
     // Static classes to manage interfaces and packets
     private NetworkInterfaceManager nInterfaces= new NetworkInterfaceManager();
@@ -77,8 +81,8 @@ public class Controller implements Initializable {
 
     /**
      * Initialize GUI and get current network interfaces
-     * @param location
-     * @param resources
+     * @param location location
+     * @param resources resources
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -122,7 +126,7 @@ public class Controller implements Initializable {
 
     /**
      * Opens new modal to display attributes of all attached network interfaces
-     * @throws IOException
+     * @throws IOException if resource does not exist
      */
     @FXML
     public void showInterfaces() throws IOException {
@@ -140,7 +144,7 @@ public class Controller implements Initializable {
 
     /**
      * Starts a new capture if an active interface is selected
-     * @throws IOException
+     * @throws IOException thrown if capture cannot be instantiated
      */
     @FXML
     public void startCapture() throws IOException {
@@ -170,7 +174,8 @@ public class Controller implements Initializable {
     }
 
     /**
-     *
+     * Method that opens the network interface and captures packets until
+     * stopCapture is called
      */
 
   private void capturePackets() throws IOException {
@@ -207,8 +212,8 @@ public class Controller implements Initializable {
     }
 
     /**
-     *
-     * @param packet
+     * Print all packets captured to the console
+     * @param packet Packet to be printed to console
      */
     private void printPacket(Packet packet) {
         Platform.runLater(new Runnable() {
@@ -230,7 +235,7 @@ public class Controller implements Initializable {
     }
 
     /**
-     *
+     * Retrieves stats from the Packet Manager
      */
     private void updateStats(){
         totalStats.setText(String.valueOf(PacketManager.getTotalCaptured()));
@@ -241,7 +246,7 @@ public class Controller implements Initializable {
     }
 
     /**
-     *
+     * Deletes stats displayed in the Main Controller
      */
     @FXML
     public void resetStats(){
@@ -253,7 +258,7 @@ public class Controller implements Initializable {
     }
 
     /**
-     *
+     * Stops the current capture and re-enables the Clear and Start buttons
      */
     @FXML
     public void stopCapture() {
@@ -272,7 +277,8 @@ public class Controller implements Initializable {
     }
 
     /**
-     *
+     * Clears all data currently displayed in the console and deletes the
+     * current capture from memory
      */
     @FXML
     public void clearCapture() throws UnknownHostException {
@@ -284,6 +290,10 @@ public class Controller implements Initializable {
         disableAllFilterFields();
     }
 
+    /**
+     * Displays the Conversations modal
+     * @throws IOException if resource does not exist
+     */
     @FXML
     public void handleViewConversations() throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("conversations.fxml"));
@@ -299,8 +309,8 @@ public class Controller implements Initializable {
     }
 
     /**
-     *
-     * @throws IOException
+     * Displays the View Payload modal
+     * @throws IOException if resource does not exist
      */
     @FXML
     public void handleViewPayload() throws IOException {
@@ -317,7 +327,9 @@ public class Controller implements Initializable {
     }
 
     /**
-     *
+     * Sets all currently selected filters in the Packet Manager and
+     * displays results to the console. All filtered packets are saved
+     * to a temporary capture
      */
     @FXML
     public void handleApplyProtocolFilters() throws UnknownHostException {
@@ -359,7 +371,8 @@ public class Controller implements Initializable {
     }
 
     /**
-     *
+     * Deletes the temporary capture, clears text currently displayed in the console,
+     * and clears all previously selected filters
      */
     @FXML
     public void handleClearProtocolFilters() throws UnknownHostException {
@@ -399,7 +412,7 @@ public class Controller implements Initializable {
     }
 
     /**
-     *
+     * Verifies that only one Protocol is checked
      */
     @FXML
     public void handleTCPCheckBoxSelect() {
@@ -411,7 +424,7 @@ public class Controller implements Initializable {
     }
 
     /**
-     *
+     * Verifies that only one Protocol is checked
      */
     @FXML
     public void handleUDPCheckBoxSelect() {
@@ -423,7 +436,7 @@ public class Controller implements Initializable {
     }
 
     /**
-     *
+     * Verifies that only one Protocol is checked
      */
     @FXML
     public void handleICMPCheckBoxSelect() {
@@ -568,6 +581,9 @@ public class Controller implements Initializable {
                 filterPort.getText().isEmpty());
     }
 
+    /**
+     * Saves the current capture to a file specified by the user.
+     */
     @FXML
     public void handleSaveCapture(){
         FileChooser saveFileChooser = new FileChooser();
@@ -582,6 +598,9 @@ public class Controller implements Initializable {
             PacketManager.saveCapture(file);
     }
 
+    /**
+     * Opens the tcpdump file specified by the user.
+     */
     @FXML
     public void handleOpenCapture(){
         // make sure currentCapture is clear before opening a capture from file.
@@ -608,10 +627,13 @@ public class Controller implements Initializable {
         stopCapture();
     }
 
-    public static void configureFileChooser(final FileChooser fileChooser){
+    /**
+     * Creates parameters for tcpdump file specified by the user.
+     * @param fileChooser creates file parameters
+     */
+    static void configureFileChooser(final FileChooser fileChooser){
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("tcpdump","*.pcap"),
                 new FileChooser.ExtensionFilter("Text Document", "*.txt"));
 
     }
 }
-

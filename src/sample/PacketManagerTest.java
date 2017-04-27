@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static sample.PacketManager.*;
 
-public class PacketManagerTest {
+class PacketManagerTest {
 
     // Protocols used
     private static int ICMP = 1;

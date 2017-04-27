@@ -26,6 +26,11 @@ public class InterfaceInfoController implements Initializable {
    @FXML
    TextArea textArea = new TextArea();
 
+    /**
+     * Initialized the state of the Network Interface Manager
+     * @param location Resource location
+     * @param resources Name of resource
+     */
    @Override
    public void initialize(URL location, ResourceBundle resources) {
        for (int i = 0; i < devices.length; i++) {

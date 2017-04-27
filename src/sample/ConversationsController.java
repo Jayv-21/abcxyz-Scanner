@@ -16,6 +16,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+/**
+ * This class displays all conversations visible within the current capture to
+ * the console. All conversations are displayed as follows:
+ * SOURCE --> DESTINATION
+ * IPv4 and IPv6 network addresses will be displayed
+ */
 public class ConversationsController implements Initializable{
 
     //private PacketManager pManager= new PacketManager();
@@ -30,7 +36,8 @@ public class ConversationsController implements Initializable{
     }
 
     /**
-     *
+     * Populates the Text Area in the Conversation modal with the IP
+     * addresses currently saved in the Packet Manager
      */
     private void populateConversationOutput() {
         StringBuilder f = new StringBuilder();
