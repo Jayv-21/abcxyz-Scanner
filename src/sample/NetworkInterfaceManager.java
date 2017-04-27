@@ -17,6 +17,9 @@ import jpcap.NetworkInterface;
 
 import java.util.ArrayList;
 
+/**
+ * All network interfaces are
+ */
 class NetworkInterfaceManager {
 
     private static NetworkInterface [] devices;
@@ -27,7 +30,7 @@ class NetworkInterfaceManager {
     }
 
     /**
-     *
+     * This function rescans for and populates all currently available network interfaces
      */
     static void refreshInterfaces() {
         netInterface = new ArrayList<>();
@@ -41,17 +44,15 @@ class NetworkInterfaceManager {
     }
 
     /**
-     *
-     * @return
+     * @return collection of currently available network interfaces
      */
     static ObservableList<String> activeInterfaces() {
         return FXCollections.observableArrayList(netInterface);
     }
 
     /**
-     *
-     * @param deviceList
-     * @return
+     * @param deviceList the interface Combobox in the Main Controller
+     * @return the network interface that will be used for the current capture
      */
     static NetworkInterface getSelectedInterface (ComboBox deviceList) {
         int r = deviceList.getSelectionModel().getSelectedIndex();
@@ -62,8 +63,7 @@ class NetworkInterfaceManager {
     }
 
     /**
-     *
-     * @return
+     * @return the network inferfaces that were captured
      */
     static NetworkInterface [] getInterfaceList() {
         return devices;

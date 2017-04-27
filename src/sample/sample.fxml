@@ -16,29 +16,11 @@
                     <items>
                         <MenuItem mnemonicParsing="false" text="New" />
                         <MenuItem mnemonicParsing="false" onAction="#handleOpenCapture" text="Open Capture" />
-                        <Menu mnemonicParsing="false" text="Open Recent" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" text="Close" />
                         <MenuItem mnemonicParsing="false" onAction="#handleSaveCapture" text="Save Capture" />
-                        <MenuItem mnemonicParsing="false" text="Save As…" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Preferences…" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#closeApp" text="Quit" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Undo" />
-                        <MenuItem mnemonicParsing="false" text="Redo" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Cut" />
-                        <MenuItem mnemonicParsing="false" text="Copy" />
-                        <MenuItem mnemonicParsing="false" text="Paste" />
-                        <MenuItem mnemonicParsing="false" text="Delete" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Select All" />
-                        <MenuItem mnemonicParsing="false" text="Unselect All" />
                     </items>
                 </Menu>
             <Menu mnemonicParsing="false" text="Capture">
@@ -76,17 +58,10 @@
                             </columnConstraints>
                             <rowConstraints>
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
                                 <Label text="Interface" textAlignment="CENTER" />
                                 <ComboBox fx:id="deviceList" prefWidth="150.0" promptText="Select" GridPane.columnIndex="1" />
-                                <Label text="From File" GridPane.rowIndex="1" />
-                                <CheckBox mnemonicParsing="false" text="Yes" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                    <font>
-                                        <Font size="10.0" />
-                                    </font>
-                                </CheckBox>
                             </children>
                         </GridPane>
                         <Label layoutX="85.0" layoutY="146.0" text="Filters">

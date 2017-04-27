@@ -17,7 +17,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 /**
- *
+ * This class stores the current captures, filtered captures, current
+ * conversations, and handles any computation or parsing of packets.
  */
 class PacketManager implements Serializable {
 
@@ -67,8 +68,8 @@ class PacketManager implements Serializable {
     }
 
     /**
-     *
-     * @param packet
+     * Add a packet to the current capture
+     * @param packet packet to be added to current capture
      */
     static void addPacket(Packet packet) {
         if (packet != null) {
@@ -682,7 +683,6 @@ class PacketManager implements Serializable {
                 }
             }
         }
-        System.out.printf("End populate conversation function\n");
     }
 
     /**
@@ -743,11 +743,15 @@ class PacketManager implements Serializable {
      * @param n The conversation to be retrieved
      * @return An ArrayList containing a source and all of its destinations
      */
-    public static ArrayList getConversation(int n) {
+    static ArrayList getConversation(int n) {
         return conversations.get(n);
     }
 
-    public static void saveCapture(File file) {
+    /**
+     * This function writes the current capture to an object output stream
+     * @param file File that the current capture will be saved to
+     */
+    static void saveCapture(File file) {
         try {
             FileOutputStream fileOut = new FileOutputStream(file);
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -761,7 +765,13 @@ class PacketManager implements Serializable {
         }
     }
 
-    public static void openCapture(File file){
+
+    /**
+     * This function inputs all objects from the saved file into the current capture
+     * ArrayList.
+     * @param file Previously captured file to be imported
+     */
+    static void openCapture(File file){
         try {
             FileInputStream fileIn = new FileInputStream(file);
             ObjectInputStream in = new ObjectInputStream(fileIn);

@@ -16,6 +16,12 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+
+    /**
+     * This function instantiates the Main Controller modal
+     * @param primaryStage to be displayed
+     * @throws Exception if resource is not found
+     */
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
